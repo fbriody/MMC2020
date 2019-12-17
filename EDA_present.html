@@ -4,6 +4,7 @@
     <title>Using the Illinois Report Card Data to Teach Statistics</title>
     <meta charset="utf-8" />
     <meta name="author" content="Frank Briody" />
+    <script src="libs/kePrint/kePrint.js"></script>
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
     <script src="libs/jquery/jquery.min.js"></script>
     <link href="libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
@@ -34,6 +35,77 @@ background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharin
 
 
 
+---
+
+# State Demographics
+
+```r
+school_type &lt;- rc17 %&gt;% 
+  count(SCHOOL_TYPE_NAME, sort = TRUE) %&gt;% 
+  mutate(rel_freq = n/sum(n))
+school_type
+```
+
+```
+## # A tibble: 4 x 3
+##   SCHOOL_TYPE_NAME     n rel_freq
+##   &lt;chr&gt;            &lt;int&gt;    &lt;dbl&gt;
+## 1 ELEMENTARY        2406   0.634 
+## 2 HIGH SCHOOL        644   0.170 
+## 3 MIDDLE SCHL        604   0.159 
+## 4 CHARTER SCH        142   0.0374
+```
+---
+## State Demographics
+
+```r
+kable(school_type) %&gt;%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+&lt;table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; SCHOOL_TYPE_NAME &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; rel_freq &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; ELEMENTARY &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2406 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6338251 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; HIGH SCHOOL &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 644 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1696523 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; MIDDLE SCHL &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 604 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1591149 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; CHARTER SCH &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 142 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0374078 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+
+```r
+ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
+  geom_bar(fill="steelblue")+
+  labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools (2017)") +
+  theme_minimal()
+```
+
+![](EDA_present_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+---
 ???
 
 Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
@@ -41,7 +113,9 @@ Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharin
 ---
 class: center, middle
 
+
 # xaringan
+
 
 ### /ʃaː.'riŋ.ɡan/
 
@@ -339,8 +413,8 @@ DT::datatable(
 )
 ```
 
-<div id="htmlwidget-2b8c94f36d3c10482917" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2b8c94f36d3c10482917">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9],[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1],[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5],[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1],["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sepal.Length<\/th>\n      <th>Sepal.Width<\/th>\n      <th>Petal.Length<\/th>\n      <th>Petal.Width<\/th>\n      <th>Species<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-0879a01a4698664262ff" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0879a01a4698664262ff">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9],[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1],[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5],[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1],["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sepal.Length<\/th>\n      <th>Sepal.Width<\/th>\n      <th>Petal.Length<\/th>\n      <th>Petal.Width<\/th>\n      <th>Species<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
