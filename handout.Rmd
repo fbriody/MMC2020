@@ -1,7 +1,9 @@
 ---
-title: "MMC Handout"
-author: "Briody"
-date: "12/17/2019"
+title: "Using the Illinois Report Card Data to Teach Statistics"
+subtitle: "MMC Conference of Workshops 2020"
+author: "Frank Briody"
+institute: "Prospect High School"
+date: "2/1/2020"
 fontsize: 10pt
 geometry: margin=.5in
 output: 
