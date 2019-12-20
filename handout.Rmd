@@ -12,6 +12,7 @@ output:
     toc: yes
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.width=4.5, fig.height=3) 
@@ -388,7 +389,7 @@ kable(school_type) %>%
 
 ```{r}
 ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
-  geom_bar(fill="steelblue")+
+  geom_bar(fill="#2F4E6F")+
   labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools (2017)") +
   theme_minimal()
 ```
@@ -396,17 +397,19 @@ ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
 ## Categorical Analysis I 
 Write a short analysis for the types of schools in the state of Illinois.
 
-\vspace{100pt}
+\vspace{75pt}
 
 
 ## Categorical Analysis II 
 Write a short analysis for the types of schools in the six county region.
 
+\vspace{75pt}
+
 ```{r fig.width=6, fig.height=4}
 rc17 %>% 
 filter(COUNTY == "Dupage" | COUNTY == "Will" | COUNTY == "Kane" | COUNTY == "Lake" | COUNTY == "Will"| COUNTY == "Cook"| COUNTY == "Kendall") %>% 
 ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
-  geom_bar(fill="firebrick4")+
+  geom_bar(fill="#2F4E6F")+
   facet_wrap(~COUNTY, nrow = 2) +
   labs(title = "Type of School by County", 
        x = "School Type", 
