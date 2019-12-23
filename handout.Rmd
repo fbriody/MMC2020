@@ -1,9 +1,11 @@
 ---
 title: "Using the Illinois Report Card Data to Teach Statistics"
-subtitle: "MMC Conference of Workshops 2020"
-author: "Frank Briody"
-institute: "Prospect High School"
+subtitle: "MMC Conference of Workshops"
 date: "2/1/2020"
+author: | 
+        | Frank Briody 
+        | Prospect High School
+        | frankbriody@gmail.com
 fontsize: 10pt
 geometry: margin=.5in
 output: 
@@ -364,6 +366,33 @@ rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "Kendall", "Dupage"))
 ```
+# Variables and Data Files
+The ISBE raw data file contains xxxx variables. They have been grouped below and the variable definitions are in the Excel file RC17_layout.xlsx. 
+\begin{minipage}[t]{0.5\textwidth}
+School information (13 variables)\\
+Student demographics (396)\\
+ACT (44)\\
+Instructional setting (92)\\
+Teacher and admin statistics (78)\\
+District financial (67)\\
+Region and legislative (3)\\
+National Assmnt. of Educ. Progress (NAEP) (184)\\
+College and Career readiness (16)
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+CTE (4)\\
+Advanced coursework (12)\\
+AP courses (168)\\
+IB courses (168)\\
+Dual credit (168)\\
+AP exams (36)\\
+Post secondary remediation (4)\\
+Response rate (5E survey) (4)\\
+Health and wellness (3)\\
+\end{minipage}
+Fifty-nine of these variables are imported into an R dataframe named rc17. All xxxx schools in Illinois have been included. A second data file named xxxxx contains the same 59 variables but only for the Chicago six county region. 
+
+## How to import
 
 
 # Descriptive Statistics via State Demographics
@@ -428,7 +457,7 @@ ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
   - define variables
   - fix issues i.e. "$" and ","
   - load libraries
-  - avaialble here
+  - available here
   
   
 
