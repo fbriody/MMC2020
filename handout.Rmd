@@ -6,8 +6,8 @@ author: |
         | Frank Briody 
         | Prospect High School
         | frankbriody@gmail.com
-fontsize: 10pt
 geometry: "left=.5in,right=.5in,top=.5in,bottom=1.0in"
+fontsize: 8pt
 output: 
   pdf_document: 
     number_sections: yes
@@ -364,8 +364,9 @@ rc17$INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516 <- as.numeric(gsub('[$,]', '',rc17
 rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL_DISTRICT2014))
 
 sixco <- rc17 %>% 
-  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "Kendall", "Dupage"))
+  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 ```
+
 
 # Variables
 The ISBE raw data file *rx17.txt* contains 1,471 variables. The variable definitions are in the Excel file *RC17_layout.xlsx* and have been categorized into the groups shown below. The first number represents available variables in each group while the second is the number actually imported into the processed data file. The import script produces 316 variables from 20 of the 21 categories for all 3,796 Illinois public schools. (None of the NAEP variables were imported.) Usable files will be discussed in section \ref{import}.  
@@ -435,15 +436,11 @@ Write a short analysis for the types of schools in the state of Illinois.
 
 
 ## Categorical Analysis II 
-Write a short analysis for the types of schools in the six county region.
-
-\vspace{75pt}
 
 ```{r fig.width=6, fig.height=4}
 rc17 %>% 
 filter(COUNTY == "Dupage" | COUNTY == "Will" | COUNTY == "Kane" | 
-         COUNTY == "Lake" | COUNTY == "Will"| COUNTY == "Cook"| 
-         COUNTY == "Kendall") %>% 
+         COUNTY == "Lake" | COUNTY == "Cook"| COUNTY == "McHenry") %>% 
 ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
   geom_bar(fill="#2F4E6F")+
   facet_wrap(~COUNTY, nrow = 2) +
@@ -455,18 +452,133 @@ ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 ```
 
+Write a short analysis for the types of schools in the six county region.
+
+\vspace{75pt}
+
+
+
 # Data Import\label{import}
 ## Data Files
 - ISBE Report Card Data Library [https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx]
   - rc17.txt
   - six_county
-- Import script
+- Import script 
   - define variables
   - fix issues i.e. "$" and ","
   - load libraries
   - available here
   
-  
+Creating the six county subset:
+```
+sixco <- rc17 %>% 
+  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
+```
+
+# Distributions
+## Lists
+### Number of High Schools in the Six County Region
+```{r}
+sixco %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
+  group_by(COUNTY) %>% 
+  summarise(count = n())
+```
+
+### Single List of Scores
+```{r}
+mchenry_act <- rc17%>% filter(COUNTY == "McHenry", is.na(ACT_COMP_SCHOOL) == FALSE )
+mchenry_act$ACT_COMP_SCHOOL
+```
+
+### Lake County ACT Scores (Ordered and Formatted)
+
+```{r}
+lake_ACT <- rc17 %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL", COUNTY == "Lake") %>% 
+  arrange(desc(ACT_COMP_SCHOOL)) %>% 
+  select(COUNTY, SCHOOL_NAME, ACT = ACT_COMP_SCHOOL)
+kable(lake_ACT)
+```
+
+Create a boxplot for Lake County ACT scores. How could you compare to DuPage county?
+
+
+## Two-Way Tables
+
+```{r}
+district_type <- rc17 %>% 
+  filter(COUNTY == "Lake" | COUNTY == "Dupage") %>% 
+  group_by(COUNTY)
+
+two_way <- with(district_type, table(DISTRICT_SIZE_NAME, COUNTY))
+
+kable(two_way, caption = "Types of School Districts") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+```
+
+# Correlation and Regression 
+## Guess the Correlation
+- ACT Composite vs Chronically Truant (#) Guess:___________ Actual:___________
+- ACT Composite vs Chronically Truant (%) Guess:___________ Actual:___________
+- ACT Composite vs Student Mobility Guess:___________ Actual:___________
+- ACT Composite vs Attendance rate (%) Guess:___________ Actual:___________
+
+## Predicting  ACT Scores
+Suppose you choose 3 variables (Composite ACT Score, Enrollment and Attendance Rate) for all schools in the Six County region. What question(s) and display(s) would you explore?
+
+\newpage
+
+## Scatterplot Analysis
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
+  geom_point(aes(alpha = sixco$SCHOOL_TOTAL_ENROLLMENT)) +
+  labs(alpha = "Enrollment", x = "Attendance Rate", y = "ACT Composite", title = "Predicting ACT from Attendance", subtitle = "Six County High Schools") +
+  theme(legend.position = c(.20, .75), text = element_text(size=10))
+```
+
+
+## Regression Output
+### All Schools
+```{r}
+summary(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL))
+```
+
+### Influential Removed
+ 
+```{r}
+sixco_removed <- sixco %>% 
+  filter(ATTENDANCE_RATE_SCHOOL_perALL>50) 
+
+  summary(lm(sixco_removed$ACT_COMP_SCHOOL~sixco_removed$ATTENDANCE_RATE_SCHOOL_perALL))
+```
+
+### Both Models
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+sixco %>% 
+  filter(ATTENDANCE_RATE_SCHOOL_perALL>50) %>% 
+  ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL, alpha = SCHOOL_TOTAL_ENROLLMENT)) +
+  geom_point() + 
+  geom_smooth(method = lm, na.rm = TRUE, se = FALSE) + 
+  geom_abline(intercept = -11.07428, slope = 0.34033, color = "Red") + 
+  theme(legend.position = "none",text = element_text(size=10))
+
+```
+
+### Residual Plot
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+ggplot(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL)) + 
+  geom_point(mapping = aes(x = .fitted, y = .resid)) + 
+  geom_hline(yintercept = 0, color = "Blue") +
+  labs(x = "Predicted ACT Composite", 
+       y = "Residual", 
+       title = "Residual Plot for Predicting School ACT from School Attendance Rate (%)") + 
+  theme(text = element_text(size = 10))
+
+```
 
 # Original Material
 ## R Markdown

@@ -378,7 +378,7 @@ rc17$INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516 <- as.numeric(gsub('[$,]', '',rc17
 rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL_DISTRICT2014))
 
 sixco <- rc17 %>% 
-  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "Kendall", "Dupage"))
+  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 ```
 
 ---
