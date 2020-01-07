@@ -704,6 +704,7 @@ one_die
 ```{r}
 four_schools <-  sample_n(rc17, 4) 
 four_schools[c("SCHOOL_NAME", "SCHOOL_TOTAL_ENROLLMENT")]
+mean(four_schools$SCHOOL_TOTAL_ENROLLMENT)
 ```
 
 ## Stratified Sample
@@ -714,6 +715,24 @@ strat_samp <- sixco %>%
   sample_n(3)
 strat_samp[c("SCHOOL_NAME", "COUNTY", "SCHOOL_TOTAL_ENROLLMENT")]
 ```
+
+## Confidence Interval Simulation
+
+```{r}
+rand_samp <- function(samp_size, vari) {
+  dat_fra <- sample_n(rc17, samp_size)
+  a <- c(0,1, TRUE)
+  a[1] <- mean(dat_fra[[vari]])
+  a[2] <- median(dat_fra[[vari]])
+  a[3] <- ifelse(a[1]>a[2], "Yes", "No")
+  return(a)
+  }
+```
+
+```{r}
+rand_samp(5, "DISTRICT_TYPE_CODE")
+```
+
 ## Binomial
 A basketball player claims he makes 70% of his free throws. During a recent game he made only 4 of 10. Does this cast doubt on his 70% claim or could making only 4 of 10 happen to a 70% shooter?
 ```{r}
