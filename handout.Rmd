@@ -719,18 +719,22 @@ strat_samp[c("SCHOOL_NAME", "COUNTY", "SCHOOL_TOTAL_ENROLLMENT")]
 ## Confidence Interval Simulation
 
 ```{r}
-rand_samp <- function(samp_size, vari) {
-  dat_fra <- sample_n(rc17, samp_size)
-  a <- c(0,1, TRUE)
-  a[1] <- mean(dat_fra[[vari]])
-  a[2] <- median(dat_fra[[vari]])
-  a[3] <- ifelse(a[1]>a[2], "Yes", "No")
+rand_samp <- function(i, vari, samp_size) {
+  a <- matrix(ncol = 3, nrow = i)
+  for (k in 1:i){
+    dat_fra <- sample_n(rc17, samp_size)
+  v1 <- mean(dat_fra[[vari]])
+  v2 <- median(dat_fra[[vari]])
+  v3 <- v1+v2
+  a[k,] <- c(v1, v2, v3)}
   return(a)
   }
 ```
 
+
+
 ```{r}
-rand_samp(5, "DISTRICT_TYPE_CODE")
+rand_samp(5, "DISTRICT_TYPE_CODE", 5)
 ```
 
 ## Binomial
