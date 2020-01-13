@@ -19,11 +19,13 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.width=4.5, fig.height=3) 
 options(htmltools.dir.version = FALSE)
+#install.packages("ggalt")
 
 library(tidyverse)
 library(kableExtra)
 library(scales)
 library(DT)
+library(ggalt) #for dumbbell plot
 
 #theme_set(text = element_text(size=20))
 theme_update(text = element_text(size=20))
@@ -365,6 +367,9 @@ rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL
 
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
+
+sixco_hs <- sixco %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL")
 ```
 
 \newpage
@@ -461,20 +466,34 @@ Write a short analysis for the types of schools in the six county region.
 
 # Data Import\label{import}
 ## Data Files
-- ISBE Report Card Data Library [https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx]
-  - rc17.txt
-  - six_county
-- Import script 
-  - define variables
-  - fix issues i.e. "$" and ","
-  - load libraries
-  - available here
-  
+### Raw
+The original raw data is available on the ISBE Report Card Data Library web page  [https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx]. You will need to download both the fixed with data file (rc17.txt 2.4MB becomes 35.4MB) and the variable definitions (RC17_layout.xlsx). Use and/or modify import_rc17.txt [https://github.com/fbriody/MMC2020] to get a subset of the data into RStudio. 
+
+### Six County Subset
+A six county subset (2.7MB) is available [https://github.com/fbriody/MMC2020]. This file is ready to be used in R, Fathom or Excel. 
+
+### Subsetting and Exporting 
 Creating the six county subset:
 ```
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 ```
+Exporting the six county subset
+```
+write.csv(sixco,"sixco.csv", row.names = FALSE)
+```
+
+## Using Fathom
+### Import
+csv import attribute names
+
+### Displays
+missing values and shift or option
+inspecting
+adding a third variable
+  act v LowInc with school type 
+
+
 
 # Numeric Summaries (REORDER THESE SECTIONS)
 ## Lists
@@ -639,7 +658,6 @@ ACTvLI +
 ```
 
 
-
 ### Adding a Third Variable
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
 sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
@@ -648,6 +666,9 @@ sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SC
   theme(legend.position = c(.165, .75), text = element_text(size=10))
 ```
 
+### Regression in Fathom
+Force a variable to be numeric (option) or categorical (shift). 
+Adding a Third Variable: Are charter schools different?
 
 ## Regression Output
 ### All Schools
@@ -717,25 +738,60 @@ strat_samp[c("SCHOOL_NAME", "COUNTY", "SCHOOL_TOTAL_ENROLLMENT")]
 ```
 
 ## Confidence Interval Simulation
-
+INCLUDE SD IN TABLE SO CAN CALCULATE INTERVAL BY HAND
 ```{r}
-rand_samp <- function(i, vari, samp_size) {
-  a <- matrix(ncol = 3, nrow = i)
-  for (k in 1:i){
-    dat_fra <- sample_n(rc17, samp_size)
-  v1 <- mean(dat_fra[[vari]])
-  v2 <- median(dat_fra[[vari]])
-  v3 <- v1+v2
-  a[k,] <- c(v1, v2, v3)}
+rand_samp <- function(samples, vari, samp_size) {
+  sixco_hs_nona <- sixco_hs[!is.na(sixco_hs[vari]), ] #remove schools with no value
+  a <- matrix(ncol = 6, nrow = samples)
+  for (k in 1:samples){
+    dat_fra <- sample_n(sixco_hs_nona, samp_size)
+    t_star <- qt(.975, df = samp_size - 1)
+    x_bar <- mean(dat_fra[[vari]])
+    stan_dev <- sd(dat_fra[[vari]])
+    lower_b <- x_bar  - t_star*stan_dev/(samp_size)**.5
+    upper_b <- x_bar + t_star*stan_dev/(samp_size)**.5
+  v1 <- k
+  v2 <- x_bar
+  v3 <- lower_b
+  v4 <- upper_b
+  v5 <- mean(sixco_hs[[vari]], na.rm = TRUE)
+  v6 <- samp_size
+  a[k,] <- c(v1, v2, v3, v4, v5, v6)}
+  colnames(a) <- c("Sample", "Mean", "L_Bound", "U_Bound", "Parameter", "Sample_Size")
   return(a)
   }
 ```
 
-
+sum(dat_fra[[vari]] !="", na.rm = TRUE)
 
 ```{r}
-rand_samp(5, "DISTRICT_TYPE_CODE", 5)
+confid_ints <- as_tibble(rand_samp(29, "ACT_COMP_SCHOOL", 25))
+confid_ints
 ```
+
+
+```{r fig.width=6, fig.height=4}
+ggplot(confid_ints, mapping = aes(x=L_Bound, xend = U_Bound, y = Sample)) + 
+  geom_point(aes(x=Mean, y=Sample)) +
+    geom_vline(xintercept = mean(confid_ints$Parameter), 
+               linetype="dashed", 
+                color = "grey", 
+               size=1) +
+    geom_dumbbell(size_xend=0,size_x=0,
+                color = ifelse(confid_ints$U_Bound < confid_ints$Parameter |
+                                confid_ints$L_Bound > confid_ints$Parameter,
+                                "red", "black")) + 
+    labs(x = "", 
+         title = paste(max(confid_ints$Sample), 
+                       "Samples of size n =",
+                       max(confid_ints$Sample_Size)
+                      ),
+         subtitle = paste("Parameter = ",round(confid_ints$Parameter,2))
+         ) + 
+  theme_minimal()
+```
+
+
 
 ## Binomial
 A basketball player claims he makes 70% of his free throws. During a recent game he made only 4 of 10. Does this cast doubt on his 70% claim or could making only 4 of 10 happen to a 70% shooter?
@@ -746,3 +802,9 @@ sort(free_throws)
 table(free_throws)
 ```
  
+# Final Thoughts
+## Learning More
+### R and RStudio
+### Fathom
+### Statistics
+DePaul, Udacity, CodeAcademy, DataCamp

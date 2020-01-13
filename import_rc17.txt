@@ -345,6 +345,6 @@ rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL
 
 #subset counties in Chicago area
 sixco <- rc17 %>% 
-  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "Kendall", "Dupage"))
+  filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 
 
