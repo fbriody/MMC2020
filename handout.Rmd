@@ -7,7 +7,7 @@ author: |
         | Prospect High School
         | frankbriody@gmail.com
 geometry: "left=.5in,right=.5in,top=.5in,bottom=1.0in"
-fontsize: 8pt
+fontsize: 10pt
 output: 
   pdf_document: 
     number_sections: yes
@@ -463,27 +463,49 @@ Write a short analysis for the types of schools in the six county region.
 \vspace{75pt}
 
 
+# Software
+## R and RStudio
+R is open source, free, industry-standard statistical analysis software that was first introduced in 1993. (R is an adaptation of the S languge that was invented at Bell Labs in 1976.) RStudio, which arrived in 2011, is a free development environment for using R. Both R and RStudio have a bit of an initial learing curve, but mastering a few basic commands opens up a world of analysis options. The RStudio installation page [https://rstudio.com/products/rstudio/download/#download] provides instructions for setting up both R and RStudio.  Suggestions for learning R are in the \nameref{sec:Appendix}. 
+
+
+## Fathom
+Key Curriculum Press, the creators of The Geometer's Sketchpad software, sells Fathom ($39 USD) at [https://fathom.concord.org]. Fathom is graphical statistical analysis software which accomplishes most tasks through a drag and drop interface. Its primary audience is teachers and students, but has reached end-of-life status. It can still be purchased and used but no further developments are expected. 
+
+## Others
+Excel, JMP, and SAS are other software platforms that can be used for analysis but will not be discussed here. The report card data will be provided in .csv format which can be imported by these programs. 
 
 # Data Import\label{import}
 ## Data Files
-### Raw
-The original raw data is available on the ISBE Report Card Data Library web page  [https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx]. You will need to download both the fixed with data file (rc17.txt 2.4MB becomes 35.4MB) and the variable definitions (RC17_layout.xlsx). Use and/or modify import_rc17.txt [https://github.com/fbriody/MMC2020] to get a subset of the data into RStudio. 
 
-### Six County Subset
-A six county subset (2.7MB) is available [https://github.com/fbriody/MMC2020]. This file is ready to be used in R, Fathom or Excel. 
+INSERT GRAPHIC HERE
 
-### Subsetting and Exporting 
-Creating the six county subset:
+### Super Easy Method
+All graphs from this presentation are available for download at [INSERT MMC GITHUB HTML LINK]. ???Look in the appendix section.
+
+### Easy Method
+A reasonably sized (2.7MB) data file containing 316 variables for the 2,049 schools in the Chicagoland six county region is avaialble at [GITHUB LINK]. The six counties are Cook, Dupage, Kane, Lake, McHenry and Will. This data file can be imported into RStudio, Fathom, Excel, etc. 
+
+### Some Variables for All Schools 
+I used the import script ```import_rc17.txt``` to select 316 variables for all 3,796 Illinois schools. A 5MB data file is available at []. Again, this data file can be imported into RStudio, Fathom, Excel, etc. 
+
+### Starting from Scratch
+The original raw data is available on the ISBE Report Card Data Library web page  [https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx]. You will need to download both the fixed width data file (rc17.txt 2.4MB becomes 35.4MB) and the variable definitions (RC17_layout.xlsx). Use and/or modify import_rc17.txt [https://github.com/fbriody/MMC2020] to get a subset of the data into RStudio. 
+
+
+Subsetting and exporting is a two step process. First, use R to create the subset:
 ```
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 ```
-Exporting the six county subset
+Then, export:
 ```
 write.csv(sixco,"sixco.csv", row.names = FALSE)
 ```
 
-## Using Fathom
+The resulting .csv can be imported by another software platform. (Note there is no need to export if you are staying in Studio. Just refer to you r new subset, in this case `sixco`.) You can customize the above command(s) to suit your needs. 
+
+
+## Processed into Fathom
 ### Import
 csv import attribute names
 
@@ -493,7 +515,8 @@ inspecting
 adding a third variable
   act v LowInc with school type 
 
-
+## Importing .csv into Excel
+Use Excel to import rc17.csv. *****CHANGE NAME to rc17_fb.csv??*****
 
 # Numeric Summaries (REORDER THESE SECTIONS)
 ## Lists
@@ -506,36 +529,18 @@ sixco %>%
 ```
 
 ### Single List of Scores
+Subsetting based on a criteria produces a single list of scores. 
+
 ```{r}
-mchenry_act <- rc17%>% filter(COUNTY == "McHenry", is.na(ACT_COMP_SCHOOL) == FALSE )
+mchenry_act <- rc17 %>% 
+  filter(COUNTY == "McHenry", is.na(ACT_COMP_SCHOOL) == FALSE )
 mchenry_act$ACT_COMP_SCHOOL
 ```
 
-### Single Values (MAYBE MOVE TO DATA IMPORT SECTION)
-#### Finding a School
-```{r}
-rc17 %>% 
-  filter(str_detect(SCHOOL_NAME, "Morton")) %>% 
-  select(SCHOOL_ID, SCHOOL_NAME, ACT_COMP_SCHOOL)
-```
+Adding ```sort()``` orders the scores. Remove the comma and the ```decreasing``` option to priduce an increasing list. 
 
-#### Using a Filter
 ```{r}
-prospect <- rc17 %>% 
-  filter(str_detect(SCHOOL_NAME, "Prospect High School"))
-prospect_act <- prospect$ACT_COMP_SCHOOL
-prospect_act
-```
-
-#### Using a Function
-```{r}
-phs_value <- function(unk) {
-  x <- rc17 %>% 
-    filter(SCHOOL_ID == "050162140170005")
-  x[unk]
-}
-
-phs_value("ACT_COMP_SCHOOL")
+sort(mchenry_act$ACT_COMP_SCHOOL, decreasing = TRUE)
 ```
 
 ### Lake County ACT Scores (Ordered and Formatted)
@@ -619,6 +624,37 @@ geom_segment(aes(x=5912, y=62.5, xend=5912, yend=0),
   theme_minimal()
 
 ```
+
+# Single Values
+## Finding a School
+```{r}
+rc17 %>% 
+  filter(str_detect(SCHOOL_NAME, "Morton")) %>% 
+  select(SCHOOL_ID, SCHOOL_NAME, ACT_COMP_SCHOOL)
+```
+
+## Using a Filter
+```{r}
+prospect <- rc17 %>% 
+  filter(str_detect(SCHOOL_NAME, "Prospect High School"))
+prospect_act <- prospect$ACT_COMP_SCHOOL
+prospect_act
+```
+
+## Using a Function
+```{r}
+phs_value <- function(unk) {
+  x <- rc17 %>% 
+    filter(SCHOOL_ID == "050162140170005")
+  x[unk]
+}
+
+phs_value("ACT_COMP_SCHOOL")
+```
+
+## Single Values in Fathom
+
+
 
 # Correlation and Regression 
 ## Guess the Correlation
@@ -802,9 +838,11 @@ sort(free_throws)
 table(free_throws)
 ```
  
-# Final Thoughts
+# Appendix\label{sec:Appendix}
 ## Learning More
 ### R and RStudio
+R4DS
 ### Fathom
 ### Statistics
 DePaul, Udacity, CodeAcademy, DataCamp
+Generic Graphs
