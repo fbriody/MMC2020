@@ -462,11 +462,11 @@ Write a short analysis for the types of schools in the six county region.
 
 # Software
 ## R and RStudio
-R is open source, free, industry-standard statistical analysis software that was first introduced in 1993. (R is an adaptation of the S languge that was invented at Bell Labs in 1976.) RStudio, which arrived in 2011, is a free development environment for using R. Both R and RStudio have a bit of an initial learing curve, but mastering a few basic commands opens up a world of analysis options. The RStudio installation page [https://rstudio.com/products/rstudio/download/#download] provides instructions for setting up both R and RStudio.  Suggestions for learning R are in the \nameref{sec:Appendix}. 
+R is open source, free, industry-standard statistical analysis software that was first introduced in 1993. (R is an adaptation of the S languge that was invented at Bell Labs in 1976.) RStudio, which arrived in 2011, is a free development environment for using R. Both R and RStudio have a bit of an initial learing curve, but mastering a few basic commands opens up a world of analysis options. The RStudio installation page https://rstudio.com/products/rstudio/download/#download provides instructions for setting up both R and RStudio.  Suggestions for learning R are in the \nameref{sec:Appendix}. 
 
 
 ## Fathom
-Key Curriculum Press, the creators of The Geometer's Sketchpad software, sells Fathom ($39 USD) at [https://fathom.concord.org]. Fathom is graphical statistical analysis software which accomplishes most tasks through a drag and drop interface. Its primary audience is teachers and students, but has reached end-of-life status. It can still be purchased and used but no further developments are expected. 
+Key Curriculum Press, the creators of The Geometer's Sketchpad software, sells Fathom ($39 USD) at https://fathom.concord.org. Fathom is graphical statistical analysis software which accomplishes most tasks through a drag and drop interface. Its primary audience is teachers and students, but has reached end-of-life status. It can still be purchased and used but no further developments are expected. 
 
 ## Others
 Excel, JMP, and SAS are other software platforms that can be used for analysis but will not be discussed here. The report card data will be provided in .csv format which can be imported by these programs. 
@@ -480,19 +480,19 @@ INSERT GRAPHIC HERE
 All graphs from this presentation are available for download at [INSERT MMC GITHUB HTML LINK]. ???Look in the appendix section.
 
 2. **Easy Method**
-A reasonably sized (2.7MB) data file containing 316 variables for the 2,049 schools in the Chicagoland six county region is avaialble at [http://frankbriody.com/rc17_data.zip]. The six counties are Cook, Dupage, Kane, Lake, McHenry and Will. This data file can be imported into RStudio, Fathom, Excel, etc. 
+A reasonably sized (2.7MB) data file containing 316 variables for the 2,049 schools in the Chicagoland six county region is avaialble at http://frankbriody.com/rc17_data.zip. The six counties are Cook, Dupage, Kane, Lake, McHenry and Will. This data file can be imported into RStudio, Fathom, Excel, etc. 
 
 2. **Some Variables for All Schools** 
-I used the import script ```import_rc17.txt``` to select 316 variables for all 3,796 Illinois schools. A 5MB data file is available at [http://frankbriody.com/rc17_data.zip]. Again, this data file can be imported into RStudio, Fathom, Excel, etc. 
+I used the import script ```import_rc17.txt``` to select 316 variables for all 3,796 Illinois schools. A 5MB data file is available at http://frankbriody.com/rc17_data.zip. Again, this data file can be imported into RStudio, Fathom, Excel, etc. 
 
 4. **Starting from Scratch**
-The original raw data is available on the ISBE Report Card Data Library web page  [https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx]. You will need to download both the fixed width data file (rc17.txt 2.4MB becomes 35.4MB) and the variable definitions (RC17_layout.xlsx). Use and/or modify import_rc17.txt [https://github.com/fbriody/MMC2020] to get a subset of the data into RStudio. 
+The original raw data is available on the ISBE Report Card Data Library web page  https://www.isbe.net/Pages/Illinois-State-Report-Card-Data.aspx. You will need to download both the fixed width data file (rc17.txt 2.4MB becomes 35.4MB) and the variable definitions (RC17_layout.xlsx). Use and/or modify import_rc17.txt https://github.com/fbriody/MMC2020 to get a subset of the data into RStudio. 
 
 **A note about files and file names:**
 
 * The original ISBE data is in a file named ```rc17.txt```. 
-* An import command is used in RStudio to produce a data frame named ```rc17```. This dataframe is a container within RStudio and is not a separate external file. This import command is available as ```rc17_import.txt``` and is available at [https://github.com/fbriody/MMC2020]. Filtering or modifying the dataframe within RStudio does not write changes to the original ```rc17.txt``` file. 
-* After a subset of the original ```rc17.txt``` datafile was imported into RStudio, a subset was exported as ```rc17.csv```. It is important to note that this .csv file does **NOT** contain all of the original ISBE variables - only 316 variables for all Illinois schools. This subset is also available at [http://frankbriody.com/rc17_data.zip].  
+* An import command is used in RStudio to produce a data frame named ```rc17```. This dataframe is a container within RStudio and is not a separate external file. This import command is available as ```rc17_import.txt``` and is available at https://github.com/fbriody/MMC2020. Filtering or modifying the dataframe within RStudio does not write changes to the original ```rc17.txt``` file. 
+* After a subset of the original ```rc17.txt``` datafile was imported into RStudio, a subset was exported as ```rc17.csv```. It is important to note that this .csv file does **NOT** contain all of the original ISBE variables - only 316 variables for all Illinois schools. This subset is also available at http://frankbriody.com/rc17_data.zip.  
 * RStudio (or other software) can be used to export a dataframe or a filtered subset of a dataframe to .csv. A six county subset, ```sixco.csv``` is included in the data file linked above. 
 
 
@@ -506,7 +506,7 @@ Then, export:
 write.csv(sixco,"sixco.csv", row.names = FALSE)
 ```
 
-The resulting .csv can be imported by another software platform. (Note there is no need to export if you are staying in Studio. Just refer to your new dataframe subset, in this case `sixco`.) You can customize the above command(s) to suit your needs. 
+The resulting .csv can be imported by another software platform. (Note there is no need to export if you are staying in RStudio. Just refer to your new dataframe subset, in this case `sixco`.) You can customize the above command(s) to suit your needs. 
 
 To get a .csvfile into R, either use the File menu and Import Dataset, or send the command 
 ```
@@ -517,23 +517,19 @@ which creates a ```newdata``` datframe within RStudio.
 
 
 ## Processed into Fathom
-First, import one of the data files into Fathom by choosing 
 
-csv import attribute names
+**Import** one of the .csv data files into Fathom by choosing ```File -> Import -> Import from File...``` and then navigate to the file location. 
 
-Second, to create summaries, tables or displays, 
-missing values and shift or option
-inspecting
-adding a third variable
-  act v LowInc with school type 
 
 ## Importing .csv into Excel
-Use Excel to import rc17.csv. *****CHANGE NAME to rc17_fb.csv??*****
+
+Use Excel to import rc17.csv.
 
 
-# Numeric Summaries (REORDER THESE SECTIONS)
+# Numeric Summaries
 ## Lists
-### Number of High Schools in the Six County Region
+
+To get the number of High Schools per county in the Six County Region:
 ```{r}
 sixco %>% 
   filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
@@ -541,8 +537,7 @@ sixco %>%
   summarise(count = n())
 ```
 
-### Single List of Scores
-Subsetting based on a criteria produces a single list of scores. 
+McHenry county seems like a good candidate for small-set data that can be analyzed with a graphing calculator. Subsetting based on a criteria produces a single list of scores. 
 
 ```{r}
 mchenry_act <- rc17 %>% 
@@ -550,13 +545,13 @@ mchenry_act <- rc17 %>%
 mchenry_act$ACT_COMP_SCHOOL
 ```
 
-Adding ```sort()``` orders the scores. Remove the comma and the ```decreasing``` option to priduce an increasing list. 
+Adding ```sort()``` orders the scores. Remove the comma and the ```decreasing``` option to produce an increasing list. 
 
 ```{r}
 sort(mchenry_act$ACT_COMP_SCHOOL, decreasing = TRUE)
 ```
 
-### Lake County ACT Scores (Ordered and Formatted)
+Lake County is a little larger, but a boxplot can be quickly made from an ordered and formatted table of ACT Scores. Create a boxplot for Lake County ACT scores. How could you compare to DuPage county?
 
 ```{r}
 lake_ACT <- rc17 %>% 
@@ -566,7 +561,7 @@ lake_ACT <- rc17 %>%
 kable(lake_ACT)
 ```
 
-Create a boxplot for Lake County ACT scores. How could you compare to DuPage county?
+
 
 ## Two-Way Tables
 ```{r}
@@ -588,7 +583,7 @@ A numeric summary for instructional spending per pupil by district:
 rc17 %>% 
   filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
   group_by(DISTRICT_NAME) %>% 
-  summarise(spend_stu = mean(INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516, na.rm = TRUE)) %>% 
+  summarize(spend_stu = mean(INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516, na.rm = TRUE)) %>% 
   summary()
 ```
 
@@ -659,6 +654,8 @@ prospect_act
 ```
 
 ## Using a Function
+
+If you put this right after the data import step you can always find single values for a specific school quickly.  
 ```{r}
 phs_value <- function(unk) {
   x <- rc17 %>% 
@@ -669,9 +666,16 @@ phs_value <- function(unk) {
 phs_value("ACT_COMP_SCHOOL")
 ```
 
-## Single Values in Fathom
+## Analysis in Fathom
 
+Drag a table from the shelf, drag a Graph from the shelf then drag a variable (or variables) onto the graph. 
 
+Fathom tries to auto detect **variable types**, but you can force a change by holding down ```shift``` or ```option```. Missing values are often stored as character, so creating a scatterplot may require holding down ```option```. If a categorical variable is coded as a number, holding down ```shift``` coerces into categorical.  
+
+Double-clicking a value opens up Fathom's **inspecing** box. 
+
+## Filters in Excel
+Excel has quite powerful filter tools. For reasonably sized data files, it may be efficient to filter and export a .csv then open the subset of data in RStudio. 
 
 # Correlation and Regression 
 ## Guess the Correlation
@@ -682,11 +686,12 @@ phs_value("ACT_COMP_SCHOOL")
 
 
 ## Scatterplot Analysis
-### Outliers and Influential
+
+The analysis of scatterplots should lead to a discussion about outliers, influentials and regression details. 
 ```{r}
 ACTvLI <- sixco %>% 
   ggplot(mapping = aes(x = LOWINCOME_SCHOOL_per, y = ACT_COMP_SCHOOL)) +
-  geom_point(color="Blue") +
+  geom_point(color="Blue", size = 1) +
   theme_minimal()
 ACTvLI
 ```
@@ -708,13 +713,14 @@ ACTvLI +
 
 ## Predicting  ACT Scores
 Suppose you choose 3 variables (Composite ACT Score, Enrollment and Attendance Rate) for all schools in the Six County region. What question(s) and display(s) would you explore?
+\vspace{75pt}
 
 
 
 
 
-### Adding a Third Variable
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 4, fig.width = 6}
+Adding a third variable introduces another layer of analysis.
+```{r message=FALSE, warning=FALSE, fig.height = 4, fig.width = 6}
 sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
   geom_point(aes(alpha = sixco$SCHOOL_TOTAL_ENROLLMENT)) +
   labs(alpha = "Enrollment", x = "Attendance Rate", y = "ACT Composite", title = "Predicting ACT from Attendance", subtitle = "Six County High Schools") +
@@ -723,13 +729,13 @@ sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SC
 
 
 ## Regression Output
-### All Schools
+
+Predicting ACT from attendance for all schools: 
 ```{r}
 summary(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL))
 ```
 
-### Influential Removed
- 
+Removing an influential point:
 ```{r}
 sixco_removed <- sixco %>% 
   filter(ATTENDANCE_RATE_SCHOOL_perALL>50) 
@@ -737,7 +743,11 @@ sixco_removed <- sixco %>%
   summary(lm(sixco_removed$ACT_COMP_SCHOOL~sixco_removed$ATTENDANCE_RATE_SCHOOL_perALL))
 ```
 
-### Both Models
+Both models on the same plot. A best fit line can be added by including 
+
+```geom_smooth(method = lm, na.rm = TRUE, se = FALSE) +``` 
+
+in the ```ggplot``` command. Is there a ***significant*** change? 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -748,20 +758,20 @@ sixco %>%
   geom_smooth(method = lm, na.rm = TRUE, se = FALSE) + 
   geom_abline(intercept = -11.07428, slope = 0.34033, color = "Red") + 
   theme(legend.position = "none",text = element_text(size=10))
-
 ```
 
 ### Residual Plot
 
-Notice that residaul plots are residuals vs. predicted and not residauls vs. explanatory. 
+Notice that residual plots are residuals vs. predicted and not residuals vs. explanatory. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL)) + 
-  geom_point(mapping = aes(x = .fitted, y = .resid)) + 
+  geom_point(mapping = aes(x = .fitted, y = .resid), size = 1) + 
   geom_hline(yintercept = 0, color = "Blue") +
   labs(x = "Predicted ACT Composite", 
        y = "Residual", 
-       title = "Residual Plot for Predicting School ACT from School Attendance Rate (%)") + 
+       title = "Predicting ACT from Attendance Rate (%)",
+       subtitle = "Residual Plot; By School, Six County Region High Schools") + 
   theme(text = element_text(size = 10))
 
 ```
@@ -780,7 +790,7 @@ one_die
 ```
 
 ## Random Selection
-Quickly generating a sampling distribution:
+The sample command can be used to generate a random  selection. Adding a statistic command and repeating quickly generates a sampling distribution. 
 ```{r}
 four_schools <-  sample_n(rc17, 4) 
 four_schools[c("SCHOOL_NAME", "SCHOOL_TOTAL_ENROLLMENT")]
