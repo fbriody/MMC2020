@@ -446,7 +446,7 @@ School District Count (3;1)]
 ---
 
 # State Demographics
-```{r}
+```{r school_type_table}
 school_type <- rc17 %>% 
   count(SCHOOL_TYPE_NAME, sort = TRUE) %>% 
   mutate(rel_freq = n/sum(n))
@@ -454,13 +454,13 @@ school_type
 ```
 ---
 ## State Demographics
-```{r}
+```{r school_type_table_formatted}
 kable(school_type) %>%
   kable_styling(bootstrap_options = "striped", full_width = FALSE)
 ```
 ---
 Write a short analysis for the types of schools in the state of Illinois.
-```{r fig.height = 6 , fig.width = 10}
+```{r school_type_bar, fig.height = 6 , fig.width = 10}
 ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
   geom_bar(fill="steelblue")+
   labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools") +
@@ -501,7 +501,7 @@ ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) + #<<
 ---
 Write a short analysis for the types of schools in the six county region.
 
-```{r echo = FALSE, fig.height = 8, fig.width = 12}
+```{r school_type_by_county, echo = FALSE, fig.height = 8, fig.width = 12}
 rc17 %>% 
 filter(COUNTY == "Dupage" | COUNTY == "Will" | COUNTY == "Kane" | 
          COUNTY == "Lake" | COUNTY == "Cook"| COUNTY == "McHenry") %>% 
@@ -511,7 +511,7 @@ ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
   labs(title = "Type of School by County", 
        x = "School Type", 
        y = "proportion",
-       subtitle = "Six Counties in the Chicago Metropolitan Region (2017)") +
+       subtitle = "Six Counties in the Chicago Metropolitan Region") +
   theme_minimal()  +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 ```
