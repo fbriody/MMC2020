@@ -7,13 +7,6 @@
     <script src="libs/kePrint/kePrint.js"></script>
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
     <script src="libs/jquery/jquery.min.js"></script>
-    <link href="libs/leaflet/leaflet.css" rel="stylesheet" />
-    <script src="libs/leaflet/leaflet.js"></script>
-    <link href="libs/leafletfix/leafletfix.css" rel="stylesheet" />
-    <script src="libs/Proj4Leaflet/proj4-compressed.js"></script>
-    <script src="libs/Proj4Leaflet/proj4leaflet.js"></script>
-    <link href="libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
-    <script src="libs/leaflet-binding/leaflet.js"></script>
     <link href="libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
     <script src="libs/datatables-binding/datatables.js"></script>
     <link href="libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
@@ -22,6 +15,7 @@
     <link href="libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
     <script src="libs/crosstalk/js/crosstalk.min.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="fb.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -37,10 +31,71 @@ class: center, middle, inverse, title-slide
 
 
 
+background-image: url(EDA_present_files/figure-html/draft.png)
 
-background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
 
 
+---
+
+# Variables
+rc17.txt - 3,796 Illinois Schools (rows)
+
+![](EDA_present_files/figure-html/rc17_fwf.png)
+
+---
+# Variables
+RC17_layout.xlsx - 1,471 variables (columns)
+
+![](EDA_present_files/figure-html/rc17_lay.png)
+
+--
+## 5,583,916 cells in a spreadsheet!
+---
+# Variables
+
+.pull-left[
+School information (13 variables;12 imported)
+
+Student demographics (396;71)
+
+ACT (44;11)
+
+Instructional setting (92;2)
+
+Teacher and admin statistics (78;26)
+
+District financial (67;40)
+
+Region and legislative (3;2)
+
+National Assmnt. of Educ. Progress (NAEP) (184;0)
+
+College and Career readiness (16;3)
+
+CTE (4;1)
+
+Advanced coursework (12;3)]
+
+.pull-right[
+AP courses (168;42)
+
+IB courses (168;42)
+
+Dual credit (168;42)
+
+AP exams (36;12)
+
+Post secondary remediation (4;1)
+
+Response rate (5E survey) (4;2)
+
+Health and wellness (3;1)
+
+Teacher Attendance (4;1)
+
+Teacher Evaluation (2;1)
+
+School District Count (3;1)]
 
 ---
 
@@ -67,7 +122,7 @@ school_type
 
 ```r
 kable(school_type) %&gt;%
-  kable_styling(bootstrap_options = "striped", full_width = F)
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
 ```
 
 &lt;table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
@@ -102,17 +157,127 @@ kable(school_type) %&gt;%
 &lt;/tbody&gt;
 &lt;/table&gt;
 ---
+Write a short analysis for the types of schools in the state of Illinois.
 
 ```r
 ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
   geom_bar(fill="steelblue")+
-  labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools (2017)") +
+  labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools") +
   theme_minimal()
 ```
 
 ![](EDA_present_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
 
 ---
+class: center, middle
+# Overview
+![](EDA_present_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+---
+Adding a third variable:
+
+```r
+rc17 %&gt;% 
+*filter(COUNTY == "Dupage" | COUNTY == "Will" | COUNTY == "Kane" |
+*        COUNTY == "Lake" | COUNTY == "Cook"| COUNTY == "McHenry") %&gt;%
+# there's a better way...  
+*ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
+  geom_bar(fill="#2F4E6F")+
+* facet_wrap(~COUNTY, nrow = 2) +
+  labs(title = "Type of School by County", 
+       x = "School Type", 
+       y = "proportion",
+       subtitle = "Six Counties in the Chicago Metropolitan Region") +
+  theme_minimal()  +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
+```
+
+.image-15[![](EDA_present_files/figure-html/six_county.gif)]
+
+
+---
+Write a short analysis for the types of schools in the six county region.
+
+![](EDA_present_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+---
+#Software
+.pull-left[
+
+* R and RStudio
+
+
+![](EDA_present_files/figure-html/r.png)
+
+
+![](EDA_present_files/figure-html/RStudio.png)
+
+]
+.pull-right[
+
+* Fathom
+
+![](EDA_present_files/figure-html/fathom.png)
+
+
+* Others
+  - Excel
+  - MiniTab
+  - JMP
+  - SAS
+
+]
+
+---
+# Data
+
+.pull-left[
+## Super Easy
+* All output (graphs and tables) are available GET LINK
+* Minor modifications can be (quickly?) made available
+]
+
+.pull-right[
+## Easy
+The six county .csv file is available at http://frankbriody.com/rc17_data.zip.
+* Contains 316 variables for 2,049 schools
+* 2.7 MB
+* No need to run the import script.
+* In R: ```newdata &lt;- read.csv(file = 'datafile.csv')``` imports and creates a data table named ```newdata```. I named my data table ```rc17```.
+]
+---
+
+# Data
+
+.pull-left[
+## Some Variables for All Schools
+The subset of 316 variables for all 3,796 Illinois schools is also available for download at http://frankbriody.com/rc17_data.zip. 
+* 5 MB
+* No need to run the import script.
+* In R: ```newdata &lt;- read.csv(file = 'datafile.csv')``` imports and creates a data table named ```newdata```. I named my data table ```rc17```.
+]
+
+.pull-right[
+## Starting from Scratch
+* Start with raw ISBE file **rc17.txt**.
+* Read the variable names in **RC17_layout.xlsx**. 
+* Use or modify the import script ```import_rc17.txt``` available at https://github.com/fbriody/MMC2020, or make your own script.
+]
+---
+# Numeric Summaries
+
+To get a .csvfile into R, either use the File menu and Import Dataset, or send the command 
+```
+newdata &lt;- read.csv(file = 'datafile.csv')
+```
+which creates a ```newdata``` datframe within RStudio. 
+---
+
+
+
+
+
+
+
+
 ???
 
 Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
@@ -410,9 +575,6 @@ library(leaflet)
 leaflet() %&gt;% addTiles() %&gt;% setView(-93.65, 42.0285, zoom = 17)
 ```
 
-<div id="htmlwidget-3e81d52e8343cc0d0e5d" style="width:100%;height:432px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3e81d52e8343cc0d0e5d">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]}],"setView":[[42.0285,-93.65],17,[]]},"evals":[],"jsHooks":[]}</script>
-
 ---
 
 
@@ -423,8 +585,8 @@ DT::datatable(
 )
 ```
 
-<div id="htmlwidget-16d2a9261ec702fca567" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-16d2a9261ec702fca567">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9],[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1],[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5],[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1],["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sepal.Length<\/th>\n      <th>Sepal.Width<\/th>\n      <th>Petal.Length<\/th>\n      <th>Petal.Width<\/th>\n      <th>Species<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b44d0a318d38acc2049a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b44d0a318d38acc2049a">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10"],[5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9],[3.5,3,3.2,3.1,3.6,3.9,3.4,3.4,2.9,3.1],[1.4,1.4,1.3,1.5,1.4,1.7,1.4,1.5,1.4,1.5],[0.2,0.2,0.2,0.2,0.2,0.4,0.3,0.2,0.2,0.1],["setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa","setosa"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sepal.Length<\/th>\n      <th>Sepal.Width<\/th>\n      <th>Petal.Length<\/th>\n      <th>Petal.Width<\/th>\n      <th>Species<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -722,16 +884,14 @@ names(xaringan:::list_css())
 ```
 
 ```
-##  [1] "chocolate-fonts"  "chocolate"        "default-fonts"   
-##  [4] "default"          "duke-blue"        "fc-fonts"        
-##  [7] "fc"               "hygge-duke"       "hygge"           
-## [10] "kunoichi"         "lucy-fonts"       "lucy"            
-## [13] "metropolis-fonts" "metropolis"       "middlebury-fonts"
-## [16] "middlebury"       "ninjutsu"         "rladies-fonts"   
-## [19] "rladies"          "robot-fonts"      "robot"           
-## [22] "rutgers-fonts"    "rutgers"          "shinobi"         
-## [25] "tamu-fonts"       "tamu"             "uo-fonts"        
-## [28] "uo"               "uol-fonts"        "uol"
+##  [1] "chocolate-fonts"  "chocolate"        "default-fonts"    "default"         
+##  [5] "duke-blue"        "fc-fonts"         "fc"               "hygge-duke"      
+##  [9] "hygge"            "kunoichi"         "lucy-fonts"       "lucy"            
+## [13] "metropolis-fonts" "metropolis"       "middlebury-fonts" "middlebury"      
+## [17] "ninjutsu"         "rladies-fonts"    "rladies"          "robot-fonts"     
+## [21] "robot"            "rutgers-fonts"    "rutgers"          "shinobi"         
+## [25] "tamu-fonts"       "tamu"             "uo-fonts"         "uo"              
+## [29] "uol-fonts"        "uol"
 ```
 
 ---

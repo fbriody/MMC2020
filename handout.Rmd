@@ -372,7 +372,7 @@ sixco_hs <- sixco %>%
 \newpage
 
 # Variables
-The ISBE raw data file *rx17.txt* contains 1,471 variables. The variable definitions are in the Excel file *RC17_layout.xlsx* and have been categorized into the groups shown below. The first number represents available variables in each group while the second is the number actually imported into the processed data file. The import script produces 316 variables from 20 of the 21 categories for all 3,796 Illinois public schools. (None of the NAEP variables were imported.) Usable files will be discussed in section \ref{import}.  
+The ISBE raw data file *rc17.txt* contains 1,471 variables. The variable definitions are in the Excel file *RC17_layout.xlsx* and have been categorized into the groups shown below. The first number represents available variables in each group while the second is the number actually imported into the processed data file. The import script produces 316 variables from 20 of the 21 categories for all 3,796 Illinois public schools. (None of the NAEP variables were imported.) Usable files will be discussed in section \ref{import}.  
 
 \rule[1ex]{\textwidth}{.1pt}
 
@@ -428,7 +428,7 @@ kable(school_type) %>%
 ```{r fig.height = 3, fig.width = 5}
 ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
   geom_bar(fill="#2F4E6F")+
-  labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools (2017)") +
+  labs(title = "Type of School", x = "School Type", subtitle = "All Illinois Schools") +
   theme_minimal()
 ```
 
