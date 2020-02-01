@@ -347,4 +347,7 @@ rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 
+#subset six-county high schools
+sixco_hs <- sixco %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL")
 
