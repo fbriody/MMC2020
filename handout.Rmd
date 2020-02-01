@@ -16,12 +16,22 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(fig.width=4, fig.height=2.5) 
 options(htmltools.dir.version = FALSE)
+
+
+##Uncomment the lines below to install if necessary
+##Installation is one-time 
+#install.packages("tidyverse")
+#install.packages("kableExtra")
+#install.packages("scales")
+#install.packages("DT")
 #install.packages("ggalt")
 
+#load packages
 library(tidyverse)
 library(kableExtra)
 library(scales)
 library(DT)
+library(ggrepel)
 library(ggalt) #for dumbbell plot
 
 #theme_set(text = element_text(size=20))
@@ -33,6 +43,7 @@ phs_value <- function(unk) {
   x[unk]
 }
 
+#make sure the path to rc17.txt is correct
 rc17 <- read_fwf("~/Documents/rc17.txt", 
          fwf_cols(SCHOOL_ID	= c(1,15),
 SCHOOL_TYPE_CODE=c(17,17),
@@ -352,6 +363,7 @@ per_of_TEACHERS_RATED_AS_PROFICIENT_OR_EXCELLENT_DISTRICT=c(9297,9301),
 num_OF_SCHOOLS_IN_THE_DISTRICT_AND_OTHER_ADMINISTRATIVE_ENTITIES_FOR_REPORT_CARD=c(9309,9311)),
 progress = TRUE)
 
+#remove special symbols like , and $ from some variables
 rc17$CHRONIC_TRUANTS_num_SCHOOL <- as.numeric(gsub('[$,]', '', rc17$CHRONIC_TRUANTS_num_SCHOOL))
 rc17$num_of_AP_EXAMS_TAKEN_BY_GRADE_10_STUDENTS_SCHOOL <- as.numeric(gsub('[$,]', '', rc17$num_of_AP_EXAMS_TAKEN_BY_GRADE_10_STUDENTS_SCHOOL))
 rc17$num_of_AP_EXAMS_PASSED_BY_GRADE_11_STUDENTS_SCHOOL <- as.numeric(gsub('[$,]', '', rc17$num_of_AP_EXAMS_PASSED_BY_GRADE_11_STUDENTS_SCHOOL))
@@ -362,9 +374,11 @@ rc17$TOTAL_EXPENDITURES201516 <- as.numeric(gsub('[$,]', '',rc17$TOTAL_EXPENDITU
 rc17$INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516 <- as.numeric(gsub('[$,]', '',rc17$INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516))
 rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL_DISTRICT2014))
 
+#subset counties in Chicago area
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
 
+#subset six-county high schools
 sixco_hs <- sixco %>% 
   filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL")
 ```

@@ -164,6 +164,9 @@ class: center, middle
 # Overview
 ![](EDA_present_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
 ---
+background-image: url(https://imgs.xkcd.com/comics/normal_distribution.png)
+
+---
 Adding a third variable:
 
 ```r
@@ -258,7 +261,9 @@ The subset of 316 variables for all 3,796 Illinois schools is also available for
 ]
 
 ---
+background-image: url(EDA_present_files/figure-html/cyoa.jpg)
 
+---
 # Numeric Summaries
 To get the number of High Schools per county in the Six County Region:
 
@@ -361,9 +366,80 @@ kable(lake_ACT)
 
 # Two Way Tables
 
+
+```r
+district_type &lt;- rc17 %&gt;% 
+  filter(COUNTY == "Lake" | COUNTY == "Dupage") %&gt;% 
+  group_by(COUNTY)
+
+two_way &lt;- with(district_type, table(DISTRICT_SIZE_NAME, COUNTY))
+
+kable(two_way, caption = "Types of School Districts") %&gt;%
+  kable_styling(bootstrap_options = "striped", full_width = F, latex_options = "hold_position")
+```
+
+&lt;table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Types of School Districts&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Dupage &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Lake &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; LARGE &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 182 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; MEDIUM &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 38 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; SMALL &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
 ---
 
 # Mean vs Median
+
+A numeric summary for instructional spending per pupil by district:
+
+```r
+rc17 %&gt;% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %&gt;% 
+  group_by(DISTRICT_NAME) %&gt;% 
+  summarize(spend_stu = mean(INSTRUCT_EXPEND_PER_PUPIL_DISTRICT201516, na.rm = TRUE)) %&gt;% 
+  summary()
+```
+
+```
+##  DISTRICT_NAME        spend_stu    
+##  Length:473         Min.   : 2975  
+##  Class :character   1st Qu.: 5263  
+##  Mode  :character   Median : 5912  
+##                     Mean   : 6571  
+##                     3rd Qu.: 7315  
+##                     Max.   :15535  
+##                     NA's   :1
+```
+
+---
+
+Putting summary numbers on a plot (code available on GitHub):
+
+![](EDA_present_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+background-image: url(https://imgs.xkcd.com/comics/convincing.png)
 
 ---
 
@@ -395,13 +471,65 @@ Comment on the distribution of ACT scores both within and between counties. For 
 
 # Finding a School
 
+
+```r
+rc17 %&gt;% 
+  filter(str_detect(SCHOOL_NAME, "Morton")) %&gt;% 
+  select(SCHOOL_ID, SCHOOL_NAME, ACT_COMP_SCHOOL)
+```
+
+```
+## # A tibble: 7 x 3
+##   SCHOOL_ID       SCHOOL_NAME                     ACT_COMP_SCHOOL
+##   &lt;chr&gt;           &lt;chr&gt;                                     &lt;dbl&gt;
+## 1 060162010170001 J Sterling Morton East High Sch            18.4
+## 2 060162010170002 J Sterling Morton West High Sch            18.7
+## 3 060162010170003 J Sterling Morton Freshman Cntr            NA  
+## 4 070161450022004 Morton Gingerwood Elem School              NA  
+## 5 150162990252844 Morton Elem Career Academy                 NA  
+## 6 530907090260006 Morton High School                         23.3
+## 7 530907090261005 Morton Jr High School                      NA
+```
+
 ---
 
 # Using a Filter
 
+
+```r
+prospect &lt;- rc17 %&gt;% 
+  filter(str_detect(SCHOOL_NAME, "Prospect High School"))
+prospect_act &lt;- prospect$ACT_COMP_SCHOOL
+prospect_act
+```
+
+```
+## [1] 25
+```
+
 ---
 
 # Using a Function
+
+
+If you put this right after the data import step you can always find single values for a specific school quickly.  
+
+```r
+phs_value &lt;- function(unk) {
+  x &lt;- rc17 %&gt;% 
+    filter(SCHOOL_ID == "050162140170005")
+  x[unk]
+}
+
+phs_value("ACT_COMP_SCHOOL")
+```
+
+```
+## # A tibble: 1 x 1
+##   ACT_COMP_SCHOOL
+##             &lt;dbl&gt;
+## 1              25
+```
 
 
 ---
@@ -414,7 +542,7 @@ Comment on the distribution of ACT scores both within and between counties. For 
 ---
 ### Guess the Correlation Coefficient
 .pull-left7030[
-![](EDA_present_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
 
 ]
 --
@@ -444,7 +572,7 @@ Truants for PHS
 ---
 ### Guess the Correlation Coefficient
 .pull-left7030[
-![](EDA_present_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 ]
 --
 .pull-right7030[
@@ -476,7 +604,7 @@ Truants for PHS
 ### Guess the Correlation Coefficient
 
 .pull-left7030[
-![](EDA_present_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 ]
 --
 .pull-right7030[
@@ -507,7 +635,7 @@ Mobility for PHS
 ---
 ### Guess the Correlation Coefficient
 .pull-left7030[
-![](EDA_present_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
 ]
 --
 .pull-right7030[
@@ -548,11 +676,11 @@ ACTvLI +
 
 **Scatterplot Analysis**  ~ The analysis of scatterplots should lead to a discussion about outliers, influentials and regression details. 
 
-![](EDA_present_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
 ---
 **Predicting ACT Scores from Attendance** ~ Analysis questions?
 
-![](EDA_present_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -620,12 +748,17 @@ summary(lm(sixco_removed$ACT_COMP_SCHOOL~sixco_removed$ATTENDANCE_RATE_SCHOOL_pe
 ---
 **Both Models Graphed**
 
-![](EDA_present_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
 
 ---
+
+background-image: url(https://imgs.xkcd.com/comics/extrapolating.png)
+
+---
+
 **Residual Plot**
 
-![](EDA_present_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+![](EDA_present_files/figure-html/act_atten_resid-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -799,6 +932,49 @@ ggplot(confid_ints, mapping = aes(x=L_Bound, xend = U_Bound, y = Sample)) +
 
 Plotting confidence intervals and comparing to parameter:
 ![](EDA_present_files/figure-html/confid_ints-1.png)&lt;!-- --&gt;
+
+---
+# Learning More
+
+.pull-left7030[
+* R and RStudio
+    + R for Data Science by Garrett Grolemund and Hadley Wickham
+* Fathom
+    + https://fathom.concord.org/help/HelpFiles/index.html
+* GitHub (https://github.com/fbriody)
+    + Start with README.md (bottom of https://github.com/fbriody/MMC2020 ).
+    + Code for handout is ```handout.Rmd```.
+    + Code for presentation is ```EDA_present.Rmd```.
+* Statistics
+    + DePaul
+    + Udacity
+    + CodeAcademy
+    + DataCamp
+]    
+
+.pull-right7030[
+![](EDA_present_files/figure-html/r4ds.png)
+
+]
+
+
+
+  
+---
+# THANK YOU for attending
+
+* Comics from Randall Munroe at https://xkcd.com/ 
+* Keep in touch - what we do is important
+
+![](https://imgs.xkcd.com/comics/correlation.png)
+
+*Contact Info*
+
+* email: frankbriody@gmail.com
+* GitHub: https://github.com/fbriody
+* Website: http://frankbriody.com
+* Twitter: @frankbriody
+* LinkedIn: https://www.linkedin.com/in/frank-briody-910700199
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
