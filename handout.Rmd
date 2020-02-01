@@ -397,9 +397,9 @@ AP exams (36;12)\\
 Post secondary remediation (4;1)\\
 Response rate (5E survey) (4;2)\\
 Health and wellness (3;1)\\
-Teacher Attendance (4;1)\\
-Teacher Evaluation (2;1)\\
-School District Count (3;1)
+Teacher attendance (4;1)\\
+Teacher evaluation (2;1)\\
+School district count (3;1)
 \end{minipage}
 
 \rule[1ex]{\textwidth}{.1pt}
@@ -432,13 +432,16 @@ ggplot(rc17, aes(x=factor(SCHOOL_TYPE_NAME)))+
   theme_minimal()
 ```
 
-## Categorical Analysis I 
+## Categorical Analysis 
+
+**Example 1**
+
 Write a short analysis for the types of schools in the state of Illinois.
 
 \vspace{75pt}
 
 
-## Categorical Analysis II 
+**Example 2**
 
 ```{r fig.height = 4, fig.width = 6}
 rc17 %>% 
@@ -474,10 +477,8 @@ Excel, JMP, and SAS are other software platforms that can be used for analysis b
 # Data Import\label{import}
 ## Data Files
 
-INSERT GRAPHIC HERE
-
 1. **Super Easy Method** 
-All graphs from this presentation are available for download at [INSERT MMC GITHUB HTML LINK]. ???Look in the appendix section.
+All graphs from this presentation are available for download at https://github.com/fbriody/MMC2020/tree/master/EDA_present_files/figure-html.
 
 2. **Easy Method**
 A reasonably sized (2.7MB) data file containing 316 variables for the 2,049 schools in the Chicagoland six county region is avaialble at http://frankbriody.com/rc17_data.zip. The six counties are Cook, Dupage, Kane, Lake, McHenry and Will. This data file can be imported into RStudio, Fathom, Excel, etc. 
@@ -491,8 +492,8 @@ The original raw data is available on the ISBE Report Card Data Library web page
 **A note about files and file names:**
 
 * The original ISBE data is in a file named ```rc17.txt```. 
-* An import command is used in RStudio to produce a data frame named ```rc17```. This dataframe is a container within RStudio and is not a separate external file. This import command is available as ```rc17_import.txt``` and is available at https://github.com/fbriody/MMC2020. Filtering or modifying the dataframe within RStudio does not write changes to the original ```rc17.txt``` file. 
-* After a subset of the original ```rc17.txt``` datafile was imported into RStudio, a subset was exported as ```rc17.csv```. It is important to note that this .csv file does **NOT** contain all of the original ISBE variables - only 316 variables for all Illinois schools. This subset is also available at http://frankbriody.com/rc17_data.zip.  
+* An import command is used in RStudio to produce a dataframe named ```rc17```. This dataframe is a container within RStudio and is not a separate external file. This import command is available as ```rc17_import.txt``` and is available at https://github.com/fbriody/MMC2020. Filtering or modifying the dataframe within RStudio does not write changes to the original ```rc17.txt``` file. 
+* After a subset of the original ```rc17.txt``` datafile was imported into RStudio, a subset was exported as ```rc17.csv```. It is important to note that this .csv file does **NOT** contain all of the original ISBE variables - only 316 variables for all Illinois schools. This subset is also available at http://frankbriody.com/rc17_data.zip.
 * RStudio (or other software) can be used to export a dataframe or a filtered subset of a dataframe to .csv. A six county subset, ```sixco.csv``` is included in the data file linked above. 
 
 
@@ -508,7 +509,7 @@ write.csv(sixco,"sixco.csv", row.names = FALSE)
 
 The resulting .csv can be imported by another software platform. (Note there is no need to export if you are staying in RStudio. Just refer to your new dataframe subset, in this case `sixco`.) You can customize the above command(s) to suit your needs. 
 
-To get a .csvfile into R, either use the File menu and Import Dataset, or send the command 
+To get a .csv file into R, either use the File menu and Import Dataset, or send the command 
 ```
 newdata <- read.csv(file = 'datafile.csv')
 ```
@@ -516,12 +517,14 @@ which creates a ```newdata``` datframe within RStudio.
 
 
 
-## Processed into Fathom
+## Importing into Other Software
 
-**Import** one of the .csv data files into Fathom by choosing ```File -> Import -> Import from File...``` and then navigate to the file location. 
+**Fathom**
+
+Import one of the .csv data files into Fathom by choosing ```File -> Import -> Import from File...``` and then navigate to the file location. 
 
 
-## Importing .csv into Excel
+**Excel**
 
 Use Excel to import rc17.csv.
 
@@ -541,7 +544,7 @@ McHenry county seems like a good candidate for small-set data that can be analyz
 
 ```{r}
 mchenry_act <- rc17 %>% 
-  filter(COUNTY == "McHenry", is.na(ACT_COMP_SCHOOL) == FALSE )
+  filter(COUNTY == "McHenry", is.na(ACT_COMP_SCHOOL) == FALSE ) #don't include missing
 mchenry_act$ACT_COMP_SCHOOL
 ```
 
@@ -575,6 +578,7 @@ kable(two_way, caption = "Types of School Districts") %>%
   kable_styling(bootstrap_options = "striped", full_width = F, latex_options = "hold_position")
 ```
 
+\newpage
 
 ## Mean vs Median
 
@@ -587,7 +591,7 @@ rc17 %>%
   summary()
 ```
 
-Putting summary numbers on a plot:
+Putting summary numbers on a plot (code available on GitHub):
 
 ```{r echo = FALSE,  warning = FALSE}
 spend_stu_plot <- rc17 %>% 
@@ -629,9 +633,9 @@ sixco  %>%
   ggplot(mapping = aes(x = COUNTY, y = ACT_COMP_SCHOOL)) +
   geom_boxplot() + 
   theme_minimal() + 
-  coord_flip() +
+  coord_flip() + #horizontal boxplots preferred
   labs(x = "County", y = "Composite ACT", 
-       title = "Composite ACT Scores for High Schools")
+       title = "High School Composite ACT Scores")
 ```
 
 Comment on the distribution of ACT scores both within and between counties. For which counties would you expect the mean to be close to the median? Which county or counties would prefer to report the median instead of the mean?
@@ -692,7 +696,7 @@ The analysis of scatterplots should lead to a discussion about outliers, influen
 ACTvLI <- sixco %>% 
   ggplot(mapping = aes(x = LOWINCOME_SCHOOL_per, y = ACT_COMP_SCHOOL)) +
   geom_point(color="Blue", size = 1) +
-  theme_minimal()
+  labs(title = "Low Income Students and ACT Score", x = "School Low Income (%)", y = "School ACT Composite" ) + theme_minimal()
 ACTvLI
 ```
 
@@ -706,12 +710,13 @@ ACTvLI +
   geom_text(aes(label=ifelse(SCHOOL_ID =="050162140170005",
                              as.character(SCHOOL_NAME),'')),hjust=0,vjust=0) +
   geom_text_repel(aes(LOWINCOME_SCHOOL_per, ACT_COMP_SCHOOL, 
-                      label = ifelse(ACT_COMP_SCHOOL >25 & 
-                                     LOWINCOME_SCHOOL_per>25, 
+                      label = ifelse(ACT_COMP_SCHOOL >25 & #label criteria
+                                     LOWINCOME_SCHOOL_per>25, #label criteria 
                                      SCHOOL_NAME, "")), size = 3)
 ```
 
-## Predicting  ACT Scores
+**Example: Predicting ACT Scores from Attendance**
+
 Suppose you choose 3 variables (Composite ACT Score, Enrollment and Attendance Rate) for all schools in the Six County region. What question(s) and display(s) would you explore?
 \vspace{75pt}
 
@@ -722,15 +727,17 @@ Suppose you choose 3 variables (Composite ACT Score, Enrollment and Attendance R
 Adding a third variable introduces another layer of analysis.
 ```{r message=FALSE, warning=FALSE, fig.height = 4, fig.width = 6}
 sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
-  geom_point(aes(alpha = sixco$SCHOOL_TOTAL_ENROLLMENT)) +
-  labs(alpha = "Enrollment", x = "Attendance Rate", y = "ACT Composite", title = "Predicting ACT from Attendance", subtitle = "Six County High Schools") +
+  geom_point(aes(alpha = sixco$SCHOOL_TOTAL_ENROLLMENT)) + #alpha is transparency
+  labs(alpha = "Enrollment", x = "Attendance Rate", 
+       y = "ACT Composite", title = "Predicting ACT from Attendance", 
+       subtitle = "Six County High Schools") +
   theme(legend.position = c(.165, .75), text = element_text(size=10))
 ```
 
 
 ## Regression Output
 
-Predicting ACT from attendance for all schools: 
+Predicting ACT from attendance for six-county schools: 
 ```{r}
 summary(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL))
 ```
@@ -790,10 +797,11 @@ one_die
 ```
 
 ## Random Selection
-The sample command can be used to generate a random  selection. Adding a statistic command and repeating quickly generates a sampling distribution. 
+The sample command can be used to generate a random selection. Adding a statistic command (like mean(variable) ) and repeating quickly generates a sampling distribution. 
 ```{r}
 four_schools <-  sample_n(rc17, 4) 
 four_schools[c("SCHOOL_NAME", "SCHOOL_TOTAL_ENROLLMENT")]
+#alternate form of dataframe$variable is dataframe[variable]
 mean(four_schools$SCHOOL_TOTAL_ENROLLMENT)
 ```
 
@@ -801,13 +809,13 @@ mean(four_schools$SCHOOL_TOTAL_ENROLLMENT)
 ```{r}
 strat_samp <- sixco %>% 
   filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
-  group_by(COUNTY) %>% 
+  group_by(COUNTY) %>% #stratify by county
   sample_n(3)
 strat_samp[c("SCHOOL_NAME", "COUNTY", "SCHOOL_TOTAL_ENROLLMENT")]
 ```
 
 ## Confidence Interval Simulation
-A function that samples then calculates confidence interval bounds and stores results in a matrix.
+A function that samples then calculates confidence interval bounds and stores results in a matrix. Each student can verify the interval bounds. (Use t* = 2.064)
 ```{r}
 rand_samp <- function(samples, vari, samp_size) {
   sixco_hs_nona <- sixco_hs[!is.na(sixco_hs[vari]), ] #remove schools with no value
@@ -820,21 +828,22 @@ rand_samp <- function(samples, vari, samp_size) {
     lower_b <- x_bar  - t_star*stan_dev/(samp_size)**.5
     upper_b <- x_bar + t_star*stan_dev/(samp_size)**.5
   v1 <- k
-  v2 <- x_bar
-  v3 <- stan_dev
-  v4 <- lower_b
-  v5 <- upper_b
-  v6 <- samp_size
+  v2 <- samp_size
+  v3 <- x_bar
+  v4 <- stan_dev
+  v5 <- lower_b
+  v6 <- upper_b
   v7 <- mean(sixco_hs[[vari]], na.rm = TRUE)
 
-  a[k,] <- c(v1, v2, v3, v4, v5, v6, v7)}
-  colnames(a) <- c("Sample", "Mean", "StdDev", "L_Bound", "U_Bound", "Sample_Size", "Parameter")
+  a[k,] <- c(v1, v2, v3, v4, v5, v6, v7)} #row k and all columns of matrix a
+  colnames(a) <- c("Sample", "Sample_Size", "Mean", "StdDev", "L_Bound", "U_Bound", "Parameter")
   return(a)
   }
 ```
 
-Converting the matrix to a table of output.
+Produce and converting the matrix to a table of output.
 ```{r}
+set.seed(2020)
 confid_ints <- as_tibble(rand_samp(29, "ACT_COMP_SCHOOL", 25))
 confid_ints
 ```
@@ -842,7 +851,7 @@ confid_ints
 Plotting confidence intervals and comparing to parameter:
 ```{r fig.width=6, fig.height=4}
 ggplot(confid_ints, mapping = aes(x=L_Bound, xend = U_Bound, y = Sample)) + 
-  geom_point(aes(x=Mean, y=Sample)) +
+  geom_point(aes(x=Mean, y=Sample)) + 
     geom_vline(xintercept = mean(confid_ints$Parameter), 
                linetype="dashed", 
                 color = "grey", 
@@ -863,10 +872,32 @@ ggplot(confid_ints, mapping = aes(x=L_Bound, xend = U_Bound, y = Sample)) +
 
 
 # Appendix\label{sec:Appendix}
-## Learning More
-### R and RStudio
-R4DS
-### Fathom
-### Statistics
-DePaul, Udacity, CodeAcademy, DataCamp
-Generic Graphs
+
+*Learning More*
+
+* R and RStudio
+    + R for Data Science by Garrett Grolemund and Hadley Wickham
+* Fathom
+    + https://fathom.concord.org/help/HelpFiles/index.html
+* GitHub (https://github.com/fbriody)
+    + Start with README.md (bottom of https://github.com/fbriody/MMC2020 ).
+    + Code for handout is ```handout.Rmd```.
+    + Code for presentation is ```EDA_present.Rmd```.
+* Statistics
+    + DePaul
+    + Udacity
+    + CodeAcademy
+    + DataCamp
+    
+
+
+
+*Contact Info*
+
+* email: frankbriody@gmail.com
+* GitHub: https://github.com/fbriody
+* Website: http://frankbriody.com
+* Twitter: @frankbriody
+* LinkedIn: https://www.linkedin.com/in/frank-briody-910700199
+
+  

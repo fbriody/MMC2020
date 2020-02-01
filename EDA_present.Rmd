@@ -38,6 +38,8 @@ library(tidyverse)
 library(kableExtra)
 library(scales)
 library(DT)
+library(ggrepel)
+library(ggalt) #for dumbbell plot
 
 #theme_set(text = element_text(size=20))
 theme_update(text = element_text(size=20))
@@ -379,6 +381,9 @@ rc17$EAV_PER_PUPIL_DISTRICT2014 <- as.numeric(gsub('[$,]', '',rc17$EAV_PER_PUPIL
 
 sixco <- rc17 %>% 
   filter(COUNTY %in% c("Cook", "Lake", "Will", "Kane", "McHenry", "Dupage"))
+
+sixco_hs <- sixco %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL")
 ```
 
 ---
@@ -516,7 +521,7 @@ ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 ```
 ---
-#Software
+# Software
 .pull-left[
 
 * R and RStudio
@@ -548,7 +553,12 @@ ggplot(aes(x=factor(SCHOOL_TYPE_NAME), y = (..count..)/sum(..count..))) +
 
 .pull-left[
 ## Super Easy
-* All output (graphs and tables) are available GET LINK
+* All output (graphs and tables) are available at
+
+https://github.com/fbriody/MMC2020
+
+then look in the EDA_present_files folder.
+
 * Minor modifications can be (quickly?) made available
 ]
 
@@ -571,617 +581,497 @@ The subset of 316 variables for all 3,796 Illinois schools is also available for
 * No need to run the import script.
 * In R: ```newdata <- read.csv(file = 'datafile.csv')``` imports and creates a data table named ```newdata```. I named my data table ```rc17```.
 ]
-
 .pull-right[
 ## Starting from Scratch
 * Start with raw ISBE file **rc17.txt**.
 * Read the variable names in **RC17_layout.xlsx**. 
 * Use or modify the import script ```import_rc17.txt``` available at https://github.com/fbriody/MMC2020, or make your own script.
 ]
+
+---
+
+# Numeric Summaries
+To get the number of High Schools per county in the Six County Region:
+
+```{r}
+sixco %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
+  group_by(COUNTY) %>% #<<
+  summarise(count = n())
+```
+
+---
+
+# Numeric Summaries
+
+McHenry county seems like a good candidate for small-set data that can be analyzed with a graphing calculator. Subsetting based on a criteria produces a single list of scores. 
+
+```{r}
+mchenry_act <- rc17 %>% 
+  filter(COUNTY == "McHenry", is.na(ACT_COMP_SCHOOL) == FALSE ) #don't include missing
+# dataframe$variable
+mchenry_act$ACT_COMP_SCHOOL #<<
+```
+
 ---
 # Numeric Summaries
 
+Adding **sort()** orders the scores. Remove the comma and the **decreasing** option to produce an increasing list. 
 
----
-
-
-
-
-
-
-
-
-???
-
-Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
-
----
-class: center, middle
-
-
-# xaringan
-
-
-### /ʃaː.'riŋ.ɡan/
-
----
-class: inverse, center, middle
-
-# Get Started
-
----
-
-# Hello World
-
-Install the **xaringan** package from [Github](https://github.com/yihui/xaringan):
-
-```{r eval=FALSE, tidy=FALSE}
-devtools::install_github("yihui/xaringan")
-```
-
---
-
-You are recommended to use the [RStudio IDE](https://www.rstudio.com/products/rstudio/), but you do not have to.
-
-- Create a new R Markdown document from the menu `File -> New File -> R Markdown -> From Template -> Ninja Presentation`;<sup>1</sup>
-
---
-
-- Click the `Knit` button to compile it;
-
---
-
-- or use the [RStudio Addin](https://rstudio.github.io/rstudioaddins/)<sup>2</sup> "Infinite Moon Reader" to live preview the slides (every time you update and save the Rmd document, the slides will be automatically reloaded in RStudio Viewer.
-
-.footnote[
-[1] 中文用户请看[这份教程](http://slides.yihui.name/xaringan/zh-CN.html)
-
-[2] See [#2](https://github.com/yihui/xaringan/issues/2) if you do not see the template or addin in RStudio.
-]
-
----
-background-image: url(`r xaringan:::karl`)
-background-position: 50% 50%
-class: center, bottom, inverse
-
-# You only live once!
-
----
-
-# Hello Ninja
-
-As a presentation ninja, you certainly should not be satisfied by the "Hello World" example. You need to understand more about two things:
-
-1. The [remark.js](https://remarkjs.com) library;
-
-1. The **xaringan** package;
-
-Basically **xaringan** injected the chakra of R Markdown (minus Pandoc) into **remark.js**. The slides are rendered by remark.js in the web browser, and the Markdown source needed by remark.js is generated from R Markdown (**knitr**).
-
----
-
-# remark.js
-
-You can see an introduction of remark.js from [its homepage](https://remarkjs.com). You should read the [remark.js Wiki](https://github.com/gnab/remark/wiki) at least once to know how to
-
-- create a new slide (Markdown syntax<sup>*</sup> and slide properties);
-
-- format a slide (e.g. text alignment);
-
-- configure the slideshow;
-
-- and use the presentation (keyboard shortcuts).
-
-It is important to be familiar with remark.js before you can understand the options in **xaringan**.
-
-.footnote[[*] It is different with Pandoc's Markdown! It is limited but should be enough for presentation purposes. Come on... You do not need a slide for the Table of Contents! Well, the Markdown support in remark.js [may be improved](https://github.com/gnab/remark/issues/142) in the future.]
-
----
-background-image: url(`r xaringan:::karl`)
-background-size: cover
-class: center, bottom, inverse
-
-# I was so happy to have discovered remark.js!
-
----
-class: inverse, middle, center
-
-# Using xaringan
-
----
-
-# xaringan
-
-Provides an R Markdown output format `xaringan::moon_reader` as a wrapper for remark.js, and you can use it in the YAML metadata, e.g.
-
-```yaml
----
-title: "A Cool Presentation"
-output:
-  xaringan::moon_reader:
-    yolo: true
-    nature:
-      autoplay: 30000
----
-```
-
-See the help page `?xaringan::moon_reader` for all possible options that you can use.
-
----
-
-# remark.js vs xaringan
-
-Some differences between using remark.js (left) and using **xaringan** (right):
-
-.pull-left[
-1. Start with a boilerplate HTML file;
-
-1. Plain Markdown;
-
-1. Write JavaScript to autoplay slides;
-
-1. Manually configure MathJax;
-
-1. Highlight code with `*`;
-
-1. Edit Markdown source and refresh browser to see updated slides;
-]
-
-.pull-right[
-1. Start with an R Markdown document;
-
-1. R Markdown (can embed R/other code chunks);
-
-1. Provide an option `autoplay`;
-
-1. MathJax just works;<sup>*</sup>
-
-1. Highlight code with `{{}}`;
-
-1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
-]
-
-.footnote[[*] Not really. See next page.]
-
----
-
-# Math Expressions
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
-
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-
-Limitations:
-
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
-
-1. There should not be spaces after the opening `$` or before the closing `$`.
-
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
-
----
-
-# R Code
-
-```{r comment='#'}
-# a boring regression
-fit = lm(dist ~ 1 + speed, data = cars)
-coef(summary(fit))
-dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
-grep('天', dojutsu, value = TRUE)
-```
-
----
-
-# R Plots
-
-```{r cars, fig.height=4, dev='png'}
-par(mar = c(4, 4, 1, .1))
-plot(cars, pch = 19, col = 'darkgray', las = 1)
-abline(fit, lwd = 2)
-```
-
----
-
-# Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
 ```{r}
-knitr::kable(head(iris), format = 'html')
+sort(mchenry_act$ACT_COMP_SCHOOL, decreasing = TRUE)
+```
+
+---
+# Numeric Summaries
+
+Lake County is a little larger, but a boxplot can be quickly made from an ordered and formatted table of ACT Scores. Create a boxplot for Lake County ACT scores. How could you compare to DuPage county?
+
+```{r echo = TRUE, results =  'hide'}
+lake_ACT <- rc17 %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL", COUNTY == "Lake") %>% 
+  arrange(desc(ACT_COMP_SCHOOL)) %>% 
+  select(COUNTY, SCHOOL_NAME, ACT = ACT_COMP_SCHOOL)
+kable(lake_ACT)
 ```
 
 ---
 
-# HTML Widgets
-
-I have not thoroughly tested HTML widgets against **xaringan**. Some may work well, and some may not. It is a little tricky.
-
-Similarly, the Shiny mode (`runtime: shiny`) does not work. I might get these issues fixed in the future, but these are not of high priority to me. I never turn my presentation into a Shiny app. When I need to demonstrate more complicated examples, I just launch them separately. It is convenient to share slides with other people when they are plain HTML/JS applications.
-
-See the next page for two HTML widgets.
-
----
-
-```{r out.width='100%', fig.height=6, eval=require('leaflet')}
-library(leaflet)
-leaflet() %>% addTiles() %>% setView(-93.65, 42.0285, zoom = 17)
+```{r lake_act_table, echo = FALSE}
+lake_ACT <- rc17 %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL", COUNTY == "Lake") %>% 
+  arrange(desc(ACT_COMP_SCHOOL)) %>% 
+  select(COUNTY, SCHOOL_NAME, ACT = ACT_COMP_SCHOOL)
+dt_lake_ACT <- as.data.frame(lake_ACT) #kable version doesn't fit on slide
+dt_lake_ACT[1:21,]
 ```
 
 ---
 
-```{r eval=require('DT'), tidy=FALSE}
-DT::datatable(
-  head(iris, 10),
-  fillContainer = FALSE, options = list(pageLength = 8)
-)
+# Two Way Tables
+
+---
+
+# Mean vs Median
+
+---
+
+# Boxplots
+
+```{r echo = TRUE, fig.show = 'hide'}
+sixco  %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
+  ggplot(mapping = aes(x = COUNTY, y = ACT_COMP_SCHOOL)) +
+  geom_boxplot(color = "Blue") + 
+  theme_minimal() + 
+  coord_flip() + #horizontal boxplots preferred #<<
+  labs(x = "County", y = "Composite ACT", 
+       title = "High School Composite ACT Scores")
 ```
 
 ---
 
-# Some Tips
+Comment on the distribution of ACT scores both within and between counties. For which counties would you expect the mean to be close to the median? Which county or counties would prefer to report the median instead of the mean?
 
-- When you use the "Infinite Moon Reader" addin in RStudio, your R session will be blocked by default. You can click the red button on the right of the console to stop serving the slides, or use the _daemonized_ mode so that it does not block your R session. To do the latter, you can set the option
-
-    ```r
-    options(servr.daemon = TRUE)
-    ```
-    
-    in your current R session, or in `~/.Rprofile` so that it is applied to all future R sessions. I do the latter by myself.
-    
-    To know more about the web server, see the [**servr**](https://github.com/yihui/servr) package.
-
---
-
-- Do not forget to try the `yolo` option of `xaringan::moon_reader`.
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        yolo: true
-    ```
-
----
-
-# Some Tips
-
-- Slides can be automatically played if you set the `autoplay` option under `nature`, e.g. go to the next slide every 30 seconds in a lightning talk:
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          autoplay: 30000
-    ```
-
---
-
-- A countdown timer can be added to every page of the slides using the `countdown` option under `nature`, e.g. if you want to spend one minute on every page when you give the talk, you can set:
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          countdown: 60000
-    ```
-
-    Then you will see a timer counting down from `01:00`, to `00:59`, `00:58`, ... When the time is out, the timer will continue but the time turns red.
-    
----
-
-# Some Tips
-
-- The title slide is created automatically by **xaringan**, but it is just another remark.js slide added before your other slides.
-
-    The title slide is set to `class: center, middle, inverse, title-slide` by default. You can change the classes applied to the title slide with the `titleSlideClass` option of `nature` (`title-slide` is always applied).
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          titleSlideClass: [top, left, inverse]
-    ```
-    
---
-
-- If you'd like to create your own title slide, disable **xaringan**'s title slide with the `seal = FALSE` option of `moon_reader`.
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        seal: false
-    ```
-
----
-
-# Some Tips
-
-- There are several ways to build incremental slides. See [this presentation](https://slides.yihui.name/xaringan/incremental.html) for examples.
-
-- The option `highlightLines: true` of `nature` will highlight code lines that start with `*`, or are wrapped in `{{ }}`, or have trailing comments `#<<`;
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          highlightLines: true
-    ```
-
-    See examples on the next page.
-
----
-
-# Some Tips
-
-
-.pull-left[
-An example using a leading `*`:
-
-    ```r
-    if (TRUE) {
-    ** message("Very important!")
-    }
-    ```
-Output:
-```r
-if (TRUE) {
-* message("Very important!")
-}
+```{r act_boxplot, echo = FALSE, warning = FALSE,  fig.height = 7.5, fig.width = 12}
+sixco  %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
+  ggplot(mapping = aes(x = COUNTY, y = ACT_COMP_SCHOOL)) +
+  geom_boxplot(color = "Blue") + 
+  theme_minimal() + 
+  coord_flip() +
+  labs(x = "County", y = "Composite ACT", 
+       title = "Composite ACT Scores for High Schools")
 ```
 
-This is invalid R code, so it is a plain fenced code block that is not executed.
-]
+---
 
-.pull-right[
-An example using `{{}}`:
+# Finding a School
 
-````
-`r ''````{r tidy=FALSE}
-if (TRUE) {
-*{{ message("Very important!") }}
-}
+---
+
+# Using a Filter
+
+---
+
+# Using a Function
+
+
+---
+
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r act_tru_num, echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+truants <- sixco %>% ggplot(mapping = aes(x = CHRONIC_TRUANTS_num_SCHOOL, y = ACT_COMP_SCHOOL)) +
+  geom_point(color="Blue") +
+  labs(x = "Chronically Truant (number)", 
+       y = "School ACT Composite", 
+       title = "Truancy and ACT Score", 
+       subtitle = "Six County High Schools")
+
+truants
 ```
-````
-Output:
-```{r tidy=FALSE}
-if (TRUE) {
-{{ message("Very important!") }}
-}
-```
-
-It is valid R code so you can run it. Note that `{{}}` can wrap an R expression of multiple lines.
 ]
 
 ---
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+truants <- truants +
+  geom_point(color=ifelse(sixco$SCHOOL_NAME == "Prospect High School", "Red", "Blue"))
 
-# Some Tips
-
-An example of using the trailing comment `#<<` to highlight lines:
-
-````markdown
-`r ''````{r tidy=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #<<
-  geom_smooth()    #<<
-```
-````
-
-Output:
-
-```{r tidy=FALSE, eval=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #<<
-  geom_smooth()    #<<
+truants
 ```
 
----
-
-# Some Tips
-
-When you enable line-highlighting, you can also use the chunk option `highlight.output` to highlight specific lines of the text output from a code chunk. For example, `highlight.output = TRUE` means highlighting all lines, and `highlight.output = c(1, 3)` means highlighting the first and third line.
-
-````md
-`r ''````{r, highlight.output=c(1, 3)}
-head(iris)
-```
-````
-
-```{r, highlight.output=c(1, 3), echo=FALSE}
-head(iris)
+]
+--
+.pull-right7030[
+Correlation Coefficient
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cor(sixco$CHRONIC_TRUANTS_num_SCHOOL, sixco$ACT_COMP_SCHOOL, use = "pairwise.complete.obs")
 ```
 
-Question: what does `highlight.output = c(TRUE, FALSE)` mean? (Hint: think about R's recycling of vectors)
+Truants for PHS
+.output[
+```{r echo=FALSE}
+phs_value("CHRONIC_TRUANTS_num_SCHOOL")
 
+```
+]
+]
 ---
-
-# Some Tips
-
-- To make slides work offline, you need to download a copy of remark.js in advance, because **xaringan** uses the online version by default (see the help page `?xaringan::moon_reader`).
-
-- You can use `xaringan::summon_remark()` to download the latest or a specified version of remark.js. By default, it is downloaded to `libs/remark-latest.min.js`.
-
-- Then change the `chakra` option in YAML to point to this file, e.g.
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        chakra: libs/remark-latest.min.js
-    ```
-
-- If you used Google fonts in slides (the default theme uses _Yanone Kaffeesatz_, _Droid Serif_, and _Source Code Pro_), they won't work offline unless you download or install them locally. The Heroku app [google-webfonts-helper](https://google-webfonts-helper.herokuapp.com/fonts) can help you download fonts and generate the necessary CSS.
-
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r act_tru_per, echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+truant_n <- sixco %>% ggplot(mapping = aes(x = CHRONIC_TRUANTS_RATE_SCHOOL_per, y = ACT_COMP_SCHOOL)) +
+  geom_point(color="Blue") +
+  labs(x = "Chronically Truant (Percent)", 
+       y = "School ACT Composite", 
+       title = "Truancy and ACT Score", 
+       subtitle = "Six County High Schools")
+truant_n
+```
+]
 ---
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+truant_n <- truant_n +
+  geom_point(color=ifelse(sixco$SCHOOL_NAME == "Prospect High School", "Red", "Blue"))
 
-# Macros
-
-- remark.js [allows users to define custom macros](https://github.com/yihui/xaringan/issues/80) (JS functions) that can be applied to Markdown text using the syntax `![:macroName arg1, arg2, ...]` or `![:macroName arg1, arg2, ...](this)`. For example, before remark.js initializes the slides, you can define a macro named `scale`:
-
-    ```js
-    remark.macros.scale = function (percentage) {
-      var url = this;
-      return '<img src="' + url + '" style="width: ' + percentage + '" />';
-    };
-    ```
-
-    Then the Markdown text
-
-    ```markdown
-    ![:scale 50%](image.jpg)
-    ```
-
-    will be translated to
-    
-    ```html
-    <img src="image.jpg" style="width: 50%" />
-    ```
-
----
-
-# Macros (continued)
-
-- To insert macros in **xaringan** slides, you can use the option `beforeInit` under the option `nature`, e.g.,
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          beforeInit: "macros.js"
-    ```
-
-    You save your remark.js macros in the file `macros.js`.
-
-- The `beforeInit` option can be used to insert arbitrary JS code before `remark.create()`. Inserting macros is just one of its possible applications.
-
----
-
-# CSS
-
-Among all options in `xaringan::moon_reader`, the most challenging but perhaps also the most rewarding one is `css`, because it allows you to customize the appearance of your slides using any CSS rules or hacks you know.
-
-You can see the default CSS file [here](https://github.com/yihui/xaringan/blob/master/inst/rmarkdown/templates/xaringan/resources/default.css). You can completely replace it with your own CSS files, or define new rules to override the default. See the help page `?xaringan::moon_reader` for more information.
-
----
-
-# CSS
-
-For example, suppose you want to change the font for code from the default "Source Code Pro" to "Ubuntu Mono". You can create a CSS file named, say, `ubuntu-mono.css`:
-
-```css
-@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
-
-.remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+truant_n
+```
+]
+--
+.pull-right7030[
+Correlation Coefficient
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cor(sixco$CHRONIC_TRUANTS_RATE_SCHOOL_per,sixco$ACT_COMP_SCHOOL, use = "pairwise.complete.obs")
 ```
 
-Then set the `css` option in the YAML metadata:
-
-```yaml
-output:
-  xaringan::moon_reader:
-    css: ["default", "ubuntu-mono.css"]
+Truants for PHS
+.output[
+```{r echo=FALSE}
+chr_tru <- phs_value("CHRONIC_TRUANTS_RATE_SCHOOL_per")
+select(chr_tru,"PHS Truant Rate"=CHRONIC_TRUANTS_RATE_SCHOOL_per)
 ```
+]
+]
+---
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r act_mobil, echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+mobility <- sixco %>% ggplot(mapping = aes(x = STUDENT_MOBILITY_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
+  geom_point(color="Blue") +
+  labs(x = "Student Mobility Rate (Percent)", 
+       y = "School ACT Composite", 
+       title = "Mobility and ACT Score", 
+       subtitle = "Six County High Schools")
 
-Here I assume `ubuntu-mono.css` is under the same directory as your Rmd.
-
-See [yihui/xaringan#83](https://github.com/yihui/xaringan/issues/83) for an example of using the [Fira Code](https://github.com/tonsky/FiraCode) font, which supports ligatures in program code.
+mobility
+```
+]
 
 ---
 
-# Themes
+### Guess the Correlation Coefficient
 
-Don't want to learn CSS? Okay, you can use some user-contributed themes. A theme typically consists of two CSS files `foo.css` and `foo-fonts.css`, where `foo` is the theme name. Below are some existing themes:
+.pull-left7030[
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+mobility <- mobility + 
+  geom_point(color=ifelse(sixco$SCHOOL_NAME == "Prospect High School", "Red", "Blue"))
+
+mobility
+```
+]
+--
+.pull-right7030[
+Correlation Coefficient
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+cor(sixco$STUDENT_MOBILITY_RATE_SCHOOL_perALL,sixco$ACT_COMP_SCHOOL, use = "pairwise.complete.obs")
+```
+
+Mobility for PHS
+.output[
+```{r echo=FALSE}
+phs_mob <- phs_value("STUDENT_MOBILITY_RATE_SCHOOL_perALL")
+select(phs_mob, "PHS Mobility" = STUDENT_MOBILITY_RATE_SCHOOL_perALL)
+```
+]
+]
+---
+
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r act_attend, echo=FALSE, warning=FALSE, message=FALSE, fig.height = 8, fig.width = 12}
+attend <- sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
+  geom_point(color="Blue") +
+  labs(x = "Attendance Rate (Percent)", 
+       y = "School ACT Composite", 
+       title = "Attendance and ACT Score", 
+       subtitle = "Six County High Schools")
+
+attend
+```
+]
+
+---
+### Guess the Correlation Coefficient
+.pull-left7030[
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.height = 8, fig.width = 12}
+attend <- attend + 
+  geom_point(color=ifelse(sixco$SCHOOL_NAME == "Prospect High School", "Red", "Blue"))
+
+attend
+```
+]
+--
+.pull-right7030[
+Correlation Coefficient
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+cor(sixco$ATTENDANCE_RATE_SCHOOL_perALL,sixco$ACT_COMP_SCHOOL, use = "pairwise.complete.obs")
+```
+Attendance for PHS
+.output[
+```{r echo=FALSE}
+phs_aten <- phs_value("ATTENDANCE_RATE_SCHOOL_perALL")
+select(phs_aten, "PHS Attend Rate" = ATTENDANCE_RATE_SCHOOL_perALL)
+```
+]
+]
+---
+**Scatterplot Analysis** ~ The analysis of scatterplots should lead to a discussion about outliers, influentials and regression details. 
+
+```{r act_low_inc, echo = FALSE, warning = FALSE,  fig.height = 7.5, fig.width = 12}
+ACTvLI <- sixco %>% 
+  ggplot(mapping = aes(x = LOWINCOME_SCHOOL_per, y = ACT_COMP_SCHOOL)) +
+  geom_point(color="Blue", size = 1) +
+  labs(title = "Low Income Students and ACT Score", x = "School Low Income (%)", y = "School ACT Composite" ) +
+  theme_minimal() 
+ACTvLI
+```
+---
+**Scatterplot Analysis**  ~ The analysis of scatterplots should lead to a discussion about outliers, influentials and regression details. 
+
+```{r fig.show= 'hide', warning = FALSE, fig.height = 7.5, fig.width = 12}
+ACTvLI + 
+  geom_text(aes(label=ifelse(SCHOOL_ID =="050162140170005",
+                             as.character(SCHOOL_NAME),'')),hjust=0,vjust=0) +
+  geom_text_repel(aes(LOWINCOME_SCHOOL_per, ACT_COMP_SCHOOL, 
+                      label = ifelse(ACT_COMP_SCHOOL >25 & #<<
+                                     LOWINCOME_SCHOOL_per>25, #<< 
+                                     SCHOOL_NAME, "")), size = 3)
+```
+---
+
+**Scatterplot Analysis**  ~ The analysis of scatterplots should lead to a discussion about outliers, influentials and regression details. 
+
+```{r echo = FALSE, warning = FALSE, fig.height = 7.5, fig.width = 12}
+ACTvLI + 
+  geom_text(aes(label=ifelse(SCHOOL_ID =="050162140170005",
+                             as.character(SCHOOL_NAME),'')),hjust=0,vjust=0) +
+  geom_text_repel(aes(LOWINCOME_SCHOOL_per, ACT_COMP_SCHOOL, 
+                      label = ifelse(ACT_COMP_SCHOOL >25 & 
+                                     LOWINCOME_SCHOOL_per>25, 
+                                     SCHOOL_NAME, "")), size = 3)
+```
+---
+**Predicting ACT Scores from Attendance** ~ Analysis questions?
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, fig.height = 7.5, fig.width = 12}
+sixco %>% ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL)) +
+  geom_point(aes(alpha = sixco$SCHOOL_TOTAL_ENROLLMENT), color = "DarkBlue") + #alpha is transparency
+  labs(alpha = "Enrollment", x = "Attendance Rate", 
+       y = "ACT Composite", title = "Predicting ACT from Attendance", 
+       subtitle = "Six County High Schools") +
+  theme_minimal() +
+  theme(legend.position = c(.165, .75), text = element_text(size=10))
+```
+
+---
 
 ```{r}
-names(xaringan:::list_css())
+summary(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL))
 ```
 
 ---
 
-# Themes
-
-To use a theme, you can specify the `css` option as an array of CSS filenames (without the `.css` extensions), e.g.,
-
-```yaml
-output:
-  xaringan::moon_reader:
-    css: [default, metropolis, metropolis-fonts]
+```{r}
+sixco_removed <- sixco %>% 
+  filter(ATTENDANCE_RATE_SCHOOL_perALL>50) 
+summary(lm(sixco_removed$ACT_COMP_SCHOOL~sixco_removed$ATTENDANCE_RATE_SCHOOL_perALL))
 ```
 
-If you want to contribute a theme to **xaringan**, please read [this blog post](https://yihui.name/en/2017/10/xaringan-themes).
+---
+**Both Models Graphed**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+sixco %>% 
+  filter(ATTENDANCE_RATE_SCHOOL_perALL>50) %>% 
+  ggplot(mapping = aes(x= ATTENDANCE_RATE_SCHOOL_perALL, y = ACT_COMP_SCHOOL, alpha = SCHOOL_TOTAL_ENROLLMENT)) +
+  geom_point(color = "DarkBlue") + 
+  geom_smooth(method = lm, na.rm = TRUE, se = FALSE) + 
+  geom_abline(intercept = -11.07428, slope = 0.34033, color = "Red") + 
+  theme_minimal() +
+  theme(legend.position = "none",text = element_text(size=10))
+```
 
 ---
-class: inverse, middle, center
-background-image: url(https://upload.wikimedia.org/wikipedia/commons/3/39/Naruto_Shiki_Fujin.svg)
-background-size: contain
+**Residual Plot**
 
-# Naruto
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 8, fig.width = 12}
+ggplot(lm(sixco$ACT_COMP_SCHOOL~sixco$ATTENDANCE_RATE_SCHOOL_perALL)) + 
+  geom_point(mapping = aes(x = .fitted, y = .resid), size = 1) + 
+  geom_hline(yintercept = 0, color = "DarkBlue") +
+  labs(x = "Predicted ACT Composite", 
+       y = "Residual", 
+       title = "Predicting ACT from Attendance Rate (%)",
+       subtitle = "Residual Plot; By School, Six County Region High Schools") + 
+  theme(text = element_text(size = 10))
 
----
-background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
-background-size: 100px
-background-position: 90% 8%
-
-# Sharingan
-
-The R package name **xaringan** was derived<sup>1</sup> from **Sharingan**, a dōjutsu in the Japanese anime _Naruto_ with two abilities:
-
-- the "Eye of Insight"
-
-- the "Eye of Hypnotism"
-
-I think a presentation is basically a way to communicate insights to the audience, and a great presentation may even "hypnotize" the audience.<sup>2,3</sup>
-
-.footnote[
-[1] In Chinese, the pronounciation of _X_ is _Sh_ /ʃ/ (as in _shrimp_). Now you should have a better idea of how to pronounce my last name _Xie_.
-
-[2] By comparison, bad presentations only put the audience to sleep.
-
-[3] Personally I find that setting background images for slides is a killer feature of remark.js. It is an effective way to bring visual impact into your presentations.
-]
+```
 
 ---
 
-# Naruto terminology
-
-The **xaringan** package borrowed a few terms from Naruto, such as
-
-- [Sharingan](http://naruto.wikia.com/wiki/Sharingan) (写輪眼; the package name)
-
-- The [moon reader](http://naruto.wikia.com/wiki/Moon_Reader) (月読; an attractive R Markdown output format)
-
-- [Chakra](http://naruto.wikia.com/wiki/Chakra) (查克拉; the path to the remark.js library, which is the power to drive the presentation)
-
-- [Nature transformation](http://naruto.wikia.com/wiki/Nature_Transformation) (性質変化; transform the chakra by setting different options)
-
-- The [infinite moon reader](http://naruto.wikia.com/wiki/Infinite_Tsukuyomi) (無限月読; start a local web server to continuously serve your slides)
-
-- The [summoning technique](http://naruto.wikia.com/wiki/Summoning_Technique) (download remark.js from the web)
-
-You can click the links to know more about them if you want. The jutsu "Moon Reader" may seem a little evil, but that does not mean your slides are evil.
+# Regression in Fathom
 
 ---
 
-class: center
+# Random Selection and Simulation
 
-# Hand seals (印)
+## Rolling a die
 
-Press `h` or `?` to see the possible ninjutsu you can use in remark.js.
-
-![](https://upload.wikimedia.org/wikipedia/commons/7/7e/Mudra-Naruto-KageBunshin.svg)
+```{r}
+set.seed(2020)
+one_die <- sample(1:6, 10, replace = TRUE)
+one_die
+```
 
 ---
 
-class: center, middle
+## Random Selection
 
-# Thanks!
+The sample command can be used to generate a random selection. Adding a statistic command (like mean(variable) ) and repeating quickly generates a sampling distribution. 
+```{r}
+four_schools <-  sample_n(rc17, 4) 
+four_schools[c("SCHOOL_NAME", "SCHOOL_TOTAL_ENROLLMENT")]
+#alternate form of dataframe$variable is dataframe[variable]
+mean(four_schools$SCHOOL_TOTAL_ENROLLMENT)
+```
 
-Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+---
 
-The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](http://yihui.name/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+## Stratified Sample
+```{r}
+strat_samp <- sixco %>% 
+  filter(SCHOOL_TYPE_NAME == "HIGH SCHOOL") %>% 
+  group_by(COUNTY) %>% #stratify by county
+  sample_n(3)
+strat_samp[c("SCHOOL_NAME", "COUNTY", "SCHOOL_TOTAL_ENROLLMENT")]
+```
+
+---
+
+A function to produce random samples and confidence interval bounds.
+```{r}
+rand_samp <- function(samples, vari, samp_size) {
+  sixco_hs_nona <- sixco_hs[!is.na(sixco_hs[vari]), ] #remove schools with no value
+  a <- matrix(ncol = 7, nrow = samples)
+  for (k in 1:samples){
+    dat_fra <- sample_n(sixco_hs_nona, samp_size)
+    t_star <- qt(.975, df = samp_size - 1)
+    x_bar <- mean(dat_fra[[vari]])
+    stan_dev <- sd(dat_fra[[vari]])
+    lower_b <- x_bar  - t_star*stan_dev/(samp_size)**.5
+    upper_b <- x_bar + t_star*stan_dev/(samp_size)**.5
+  v1 <- k
+  v2 <- samp_size
+  v3 <- x_bar
+  v4 <- stan_dev
+  v5 <- lower_b
+  v6 <- upper_b
+  v7 <- mean(sixco_hs[[vari]], na.rm = TRUE)
+
+  a[k,] <- c(v1, v2, v3, v4, v5, v6, v7)} #row k and all columns of matrix a
+  colnames(a) <- c("Sample", "Sample_Size", "Mean", "StdDev", "L_Bound", "U_Bound", "Parameter")
+  return(a)
+  }
+```
+---
+
+Produce and converting the matrix to a table of output.
+
+```{r}
+set.seed(2020)
+confid_ints <- as_tibble(rand_samp(29, "ACT_COMP_SCHOOL", 25))
+confid_ints
+```
+
+---
+Plotting confidence intervals and comparing to parameter:
+```{r fig.show = 'hide', fig.width=8, fig.height=12}
+ggplot(confid_ints, mapping = aes(x=L_Bound, xend = U_Bound, y = Sample)) + 
+  geom_point(aes(x=Mean, y=Sample)) + 
+    geom_vline(xintercept = mean(confid_ints$Parameter), 
+               linetype="dashed", 
+                color = "grey", 
+               size=1) +
+    geom_dumbbell(size_xend=0,size_x=0,
+                color = ifelse(confid_ints$U_Bound < confid_ints$Parameter |
+                                confid_ints$L_Bound > confid_ints$Parameter,
+                                "red", "black")) + 
+    labs(x = "Average ACT Score", 
+         title = paste(max(confid_ints$Sample), 
+                       "Samples of size n =",
+                       max(confid_ints$Sample_Size)
+                      ),
+         subtitle = paste("Parameter = ",round(confid_ints$Parameter,2))
+         ) + 
+  theme_minimal()
+```
+
+---
+
+Plotting confidence intervals and comparing to parameter:
+```{r confid_ints, echo = FALSE, fig.width=12, fig.height=8}
+ggplot(confid_ints, mapping = aes(x=L_Bound, xend = U_Bound, y = Sample)) + 
+  geom_point(aes(x=Mean, y=Sample)) + 
+    geom_vline(xintercept = mean(confid_ints$Parameter), 
+               linetype="dashed", 
+                color = "grey", 
+               size=1) +
+    geom_dumbbell(size_xend=0,size_x=0,
+                color = ifelse(confid_ints$U_Bound < confid_ints$Parameter |
+                                confid_ints$L_Bound > confid_ints$Parameter,
+                                "red", "black")) + 
+    labs(x = "Average ACT Score", 
+         title = paste(max(confid_ints$Sample), 
+                       "Samples of size n =",
+                       max(confid_ints$Sample_Size)
+                      ),
+         subtitle = paste("Parameter = ",round(confid_ints$Parameter,2))
+         ) + 
+  theme_minimal()
+```
+
