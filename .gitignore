@@ -3,6 +3,8 @@ outline.RMD
 outline.html
 *.log
 
+*unnamed-chunk*
+
 # History files
 .Rhistory
 .Rapp.history
